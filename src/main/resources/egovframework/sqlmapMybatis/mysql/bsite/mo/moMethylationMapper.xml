@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="moMethylationMapper">
+
+	<insert id="insertMethBatch" parameterType="java.util.List">
+		INSERT INTO mo_meth (ud_id, probe_id, sample_id, beta_value)
+		VALUES
+		<foreach collection="list" item="item" separator=", ">
+			(#{item.ud_id}, #{item.probe_id}, #{item.sample_id}, #{item.beta_value})
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+			beta_value = VALUES(beta_value)
+	</insert>
+	
+	<insert id="insertMethBatchR3" parameterType="java.util.List">
+		INSERT INTO mo_meth2 (ud_id, probe_id, sample_id, beta_value)
+		VALUES
+		<foreach collection="list" item="item" separator=", ">
+			(#{item.ud_id}, #{item.probe_id}, #{item.sample_id}, #{item.beta_value})
+		</foreach>
+	</insert>
+	
+	<insert id="insertMethBatch2" parameterType="java.util.List">
+		INSERT INTO mo_meth2 (ud_id, probe_id, sample_id, beta_value)
+		VALUES
+		<foreach collection="list" item="item" separator=", ">
+			(#{item.ud_id}, #{item.probe_id}, #{item.sample_id}, #{item.beta_value})
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+			beta_value = VALUES(beta_value)
+	</insert>
+	
+	<insert id="insertMethBatch3" parameterType="java.util.List">
+		INSERT INTO mo_meth3 (ud_id, probe_id, sample_id, beta_value)
+		VALUES
+		<foreach collection="list" item="item" separator=", ">
+			(#{item.ud_id}, #{item.probe_id}, #{item.sample_id}, #{item.beta_value})
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+			beta_value = VALUES(beta_value)
+	</insert>
+	
+	<insert id="insertEpicBatch" parameterType="java.util.List">
+		INSERT IGNORE INTO mo_epic450k (probe_id, ref_gene)
+		VALUES
+		<foreach collection="list" item="item" separator=", ">
+			(#{item.probe_id}, #{item.ref_gene})
+		</foreach>
+	</insert>
+	
+	
+	
+	<insert id="insertFileLog" parameterType="mo_file_logVO">
+		INSERT INTO mo_file_log	(tb_name, line_no, note)
+		VALUES (#{tb_name}, #{line_no}, #{note})
+	</insert>
+	
+	<insert id="insertExpCntBatch" parameterType="java.util.List">
+		INSERT INTO mo_exp_cnt2 (ud_id, gene_symbol, sample_id, val)
+		VALUES
+		<foreach collection="list" item="item" separator=", ">
+			(#{item.ud_id}, #{item.gene_symbol}, #{item.sample_id}, #{item.val})
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+			val = VALUES(val)
+	</insert>
+	
+	<insert id="insertExpTpmBatch" parameterType="java.util.List">
+		INSERT INTO mo_exp_tpm2 (ud_id, gene_symbol, sample_id, val)
+		VALUES
+		<foreach collection="list" item="item" separator=", ">
+			(#{item.ud_id}, #{item.gene_symbol}, #{item.sample_id}, #{item.val})
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+			val = VALUES(val)
+	</insert>
+	
+	
+	
+	<insert id="insertMutationIndelBatch" parameterType="java.util.List">
+		INSERT IGNORE INTO mo_mutation_indel2 (ud_id, m_type, sample_id, hugo_symbol, entrez_gene_id, ncbi_build, chromosome, start_position, end_position, strand, variant_classification, variant_type, reference_allele, tumor_seq_allele1, tumor_seq_allele2, dbsnp_rs, tumor_sample_barcode, matched_norm_sample_barcode, hgvsc, transcript_id)
+		VALUES
+		<foreach collection="list" item="item" separator=",">(#{item.ud_id}, #{item.m_type}, #{item.sample_id}, #{item.hugo_symbol}, #{item.entrez_gene_id}, #{item.ncbi_build}, #{item.chromosome}, #{item.start_position}, #{item.end_position}, #{item.strand}, #{item.variant_classification}, #{item.variant_type}, #{item.reference_allele}, #{item.tumor_seq_allele1}, #{item.tumor_seq_allele2}, #{item.dbsnp_rs}, #{item.tumor_sample_barcode}, #{item.matched_norm_sample_barcode}, #{item.hgvsc}, #{item.transcript_id})</foreach>
+	</insert>
+	
+	<insert id="insertMutationSnvBatch" parameterType="java.util.List">
+		INSERT IGNORE INTO mo_mutation_snv2 (ud_id, m_type, sample_id, hugo_symbol, entrez_gene_id, ncbi_build, chromosome, start_position, end_position, strand, variant_classification, variant_type, reference_allele, tumor_seq_allele1, tumor_seq_allele2, dbsnp_rs, tumor_sample_barcode, matched_norm_sample_barcode, hgvsc, transcript_id)
+		VALUES
+		<foreach collection="list" item="item" separator=",">(#{item.ud_id}, #{item.m_type}, #{item.sample_id}, #{item.hugo_symbol}, #{item.entrez_gene_id}, #{item.ncbi_build}, #{item.chromosome}, #{item.start_position}, #{item.end_position}, #{item.strand}, #{item.variant_classification}, #{item.variant_type}, #{item.reference_allele}, #{item.tumor_seq_allele1}, #{item.tumor_seq_allele2}, #{item.dbsnp_rs}, #{item.tumor_sample_barcode}, #{item.matched_norm_sample_barcode}, #{item.hgvsc}, #{item.transcript_id})</foreach>
+	</insert>
+	
+	
+	
+	
+	
+	<select id="selectTest" resultType="mo_expVO">
+		SELECT gene_symbol, sample_id, val
+		FROM mo_exp_tpm${ud_idx} A
+		WHERE sample_id = 'PM-AA-0051-N'
+		ORDER BY A.sample_id, A.gene_symbol
+	</select>
+	
+	<select id="selectProbeMethList100" resultType="String">
+		SELECT probe_id FROM mo_epic850k LIMIT 100
+	</select>
+	
+	<select id="selectMethList" resultType="mo_methVO" parameterType="OmicsDataVO">
+		SELECT 
+			IF(B.ref_gene IS NULL, A.probe_id, CONCAT(B.ref_gene, '$', A.probe_id)) AS gene_probe, 
+			B.ref_gene AS gene_symbol, A.probe_id, A.beta_value, A.sample_id
+		FROM mo_meth${ud_idx} A
+			LEFT OUTER JOIN mo_epic850k B
+				ON A.probe_id = B.probe_id
+		WHERE A.sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND A.probe_id IN
+			<foreach collection="probeList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</select>
+	
+	<select id="selectMethProbeList" resultType="String" parameterType="OmicsDataVO">
+		SELECT probe_id
+		FROM mo_epic850k B
+		WHERE B.ref_gene IN
+			 <foreach collection="geneList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+		GROUP BY probe_id
+	</select>
+	
+	<select id="selectMethListByGene" resultType="mo_methVO" parameterType="OmicsDataVO">
+		SELECT CONCAT(B.ref_gene, '$', A.probe_id) AS gene_probe, B.ref_gene AS gene_symbol, A.probe_id, A.beta_value, A.sample_id
+		FROM mo_epic850k B
+			INNER JOIN mo_meth${ud_idx} A
+				ON A.probe_id = B.probe_id
+		WHERE A.sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND B.ref_gene IN
+			<foreach collection="geneList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</select>
+	
+	<select id="selectMethListByGeneSample" resultType="mo_methVO" parameterType="OmicsDataVO">
+		SELECT CONCAT(B.ref_gene, '$', A.probe_id) AS gene_probe, B.ref_gene AS gene_symbol, A.probe_id, A.beta_value, A.sample_id
+		FROM mo_epic850k B
+			INNER JOIN mo_meth${ud_idx} A
+				ON A.probe_id = B.probe_id
+		WHERE A.sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND B.ref_gene IN
+			<foreach collection="geneList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</select>
+	
+	<select id="selectMethList100" resultType="mo_methVO" parameterType="OmicsDataVO">
+		SELECT CONCAT(B.ref_gene, '$', A.probe_id) AS gene_probe, B.ref_gene, A.probe_id, A.beta_value, A.sample_id
+		FROM (SELECT * FROM mo_epic850k order by probe_id LIMIT 100) B
+			INNER JOIN mo_meth${ud_idx} A
+				ON A.probe_id = B.probe_id
+		WHERE A.sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</select>
+	
+	<select id="selectMutSnvGeneList100" resultType="String" parameterType="OmicsDataVO">
+		SELECT hugo_symbol
+		FROM mo_mutation_snv${ud_idx} A
+		WHERE 
+			A.hugo_symbol <![CDATA[<>]]> 'Unknown'
+			AND A.variant_classification IN ('Missense_Mutation', 'Nonsense_Mutation', 'Splice_Site')
+			AND A.sample_id IN 
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+		GROUP BY hugo_symbol
+		ORDER BY COUNT(*) desc
+		LIMIT 100
+	</select>
+	
+	<select id="selectMutGeneListLimit" resultType="String" parameterType="OmicsDataVO">
+		SELECT hugo_symbol
+		FROM mo_mutation${ud_idx} A
+		WHERE 
+			A.hugo_symbol <![CDATA[<>]]> 'Unknown'
+			AND A.variant_classification IN ('Missense_Mutation', 'Nonsense_Mutation', 'Splice_Site', 'INS', 'DEL')
+			AND A.sample_id IN 
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+		GROUP BY hugo_symbol
+		ORDER BY COUNT(*) desc
+		LIMIT #{searchLimit}
+	</select>
+	
+	<select id="selectMutSnvGeneListLimit" resultType="String" parameterType="OmicsDataVO">
+		SELECT hugo_symbol
+		FROM mo_mutation_snv${ud_idx} A
+		WHERE 
+			A.hugo_symbol <![CDATA[<>]]> 'Unknown'
+			AND A.variant_classification IN ('Missense_Mutation', 'Nonsense_Mutation', 'Splice_Site')
+			AND A.sample_id IN 
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+		GROUP BY hugo_symbol
+		ORDER BY COUNT(*) desc
+		LIMIT #{searchLimit}
+	</select>
+	
+	<select id="selectMutSnvList" resultType="mo_mutationVO" parameterType="OmicsDataVO">
+		SELECT A.*
+		FROM mo_mutation_snv${ud_idx} A
+		WHERE A.sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND A.hugo_symbol IN
+			<foreach collection="geneList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND A.variant_classification IN ('Missense_Mutation', 'Nonsense_Mutation', 'Splice_Site')
+	</select>
+	
+	<select id="selectMutIndelGeneList100" resultType="String" parameterType="OmicsDataVO">
+		SELECT hugo_symbol 
+		FROM mo_mutation_indel${ud_idx} A
+		WHERE 
+			A.hugo_symbol <![CDATA[<>]]> 'Unknown'
+			AND A.sample_id IN 
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+		GROUP BY hugo_symbol
+		ORDER BY COUNT(*) desc
+		LIMIT 100
+	</select>
+	
+	<select id="selectMutIndelList" resultType="mo_mutationVO" parameterType="OmicsDataVO">
+		SELECT A.*
+		FROM mo_mutation_indel${ud_idx} A
+		WHERE A.sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND A.hugo_symbol IN
+			<foreach collection="geneList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</select>
+	
+	<select id="selectGeneExpTpmList100" resultType="String">
+		SELECT gene_symbol FROM mo_gene_exp_tpm${ud_idx} LIMIT 100
+	</select>
+	
+	<select id="selectGeneExpCntList100" resultType="String">
+		SELECT gene_symbol FROM mo_gene_exp_cnt${ud_idx} LIMIT 100
+	</select>
+	
+	<select id="selectExpTpmList" resultType="mo_expVO" parameterType="SampleBaseVO">
+		SELECT gene_symbol, sample_id, val
+		FROM mo_exp_tpm${ud_idx} A
+		WHERE sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND gene_symbol IN
+			<foreach collection="geneList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+		ORDER BY A.sample_id
+	</select>
+	
+	<select id="selectExpTpmListByGene" resultType="mo_expVO" parameterType="SampleBaseVO">
+		SELECT gene_symbol, sample_id, val
+		FROM mo_exp_tpm${ud_idx} A
+		WHERE sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND gene_symbol = #{searchGene}
+		ORDER BY A.sample_id
+	</select>
+	
+	<select id="selectExpCntList" resultType="mo_expVO" parameterType="SampleBaseVO">
+		SELECT gene_symbol, sample_id, val
+		FROM mo_exp_cnt${ud_idx} A
+		WHERE sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+			AND gene_symbol IN
+			<foreach collection="geneList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+		-- ORDER BY A.sample_id, A.gene_symbol
+	</select>
+	
+	<select id="selectInfiniumList" resultType="mo_infiniumVO" parameterType="SampleBaseVO">
+		SELECT *
+		FROM mo_infinium A
+		WHERE IlmnID IN
+			<foreach collection="probeList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</select>
+	
+	
+
+	
+	<select id="selectProbeGeneEpicList" resultType="mo_epic850kVO" parameterType="OmicsDataVO">
+		SELECT ref_gene, probe_id, CONCAT(ref_gene, '$', probe_id) AS gene_probe 
+		FROM mo_epic850k 
+		WHERE ref_gene IN 
+			<foreach collection="geneList" item="item" index="index" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+	</select>
+
+	<select id="selectEpicGeneList" resultType="String">
+		SELECT gene_symbol
+		FROM mo_gene_epic A
+	</select>
+	
+	<insert id="insertScRnaBatch" parameterType="java.util.List">
+		INSERT INTO mo_sc_cell_gene (cell_id, gene_name, value)
+		VALUES
+		<foreach collection="list" item="item" separator=", ">
+			(#{item.cell_id}, #{item.gene_name}, #{item.value})
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+			value = VALUES(value)
+	</insert>
+	
+	<select id="selectScRnaCellIdListByGene" resultType="String" parameterType="String">
+		SELECT cell_id
+		FROM mo_sc_cell_gene A
+		WHERE A.gene_name = #{searchGene}
+		ORDER BY cell_id
+	</select>
+	
+	<select id="selectScRnaValueListByGene" resultType="int" parameterType="String">
+		SELECT value
+		FROM mo_sc_cell_gene A
+		WHERE A.gene_name = #{searchGene}
+		ORDER BY cell_id
+	</select>
+	
+	<select id="selectScRnaScatterListByGene" resultType="mo_sc_scatterVO" parameterType="OmicsDataVO">
+		SELECT A.cell_id, A.tsne_1, A.tsne_2, B.value, C.cell_type
+		FROM mo_tsne A
+			INNER JOIN mo_sc_cell_gene B ON A.cell_id = B.cell_id
+			INNER JOIN mo_sc_meta C ON A.cell_id = C.cell_id
+		WHERE B.gene_name = #{searchGene}
+		<if test="searchCluster != null and searchCluster !=''">
+			AND C.cell_type = #{searchCluster}
+		</if>
+		ORDER BY B.cell_id;
+	</select>
+	
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="methylationMapper">
+	
+	<select id="selectGeneList" resultType="String">
+		SELECT gene_symbol FROM genes 
+	</select>
+	
+	<select id="selectMethylationList" resultType="dna_meVO">
+		SELECT * FROM dna_me 
+	</select>
+	
+	<select id="selectProbeGeneList" resultType="dna_me_probe_geneVO">
+		SELECT * FROM dna_me_probe_gene 
+	</select>
+	
+	
+	
+	<select id="selectMethylationXAxis" resultType="dna_meVO">
+		SELECT CONCAT(B.gene_symbol, '$', A.probe_id) AS gene_probe, B.gene_symbol, A.probe_id, A.beta_value, A.sample_id
+		FROM dna_me A
+			LEFT OUTER JOIN dna_me_probe_gene B
+				ON A.probe_id = B.probe_id
+		ORDER BY A.sample_id, B.idx
+	</select>
+	
+	
+	<select id="selectMethylationYAxis" resultType="rna_seqVO">
+		SELECT * 
+		FROM rna_seq A
+		ORDER BY A.sample_id, A.gene_symbol
+	</select>
+	
+	<select id="selectMethylationXY" resultType="MethylationVO" parameterType="MethylationVO">
+		SELECT
+			A.beta_value AS x, 
+			(SELECT read_count FROM rna_seq WHERE gene_symbol = B.gene_symbol AND sample_id = A.sample_id) AS y
+		FROM dna_me A
+			LEFT OUTER JOIN dna_me_probe_gene B
+				ON A.probe_id = B.probe_id
+			LEFT OUTER JOIN sample_patient_match C
+				ON A.sample_id = C.sample_id
+		WHERE B.gene_symbol = #{search_gene_symbol} AND A.probe_id = #{search_probe_id}		
+		ORDER BY A.sample_id, B.idx
+	</select>
+	
+	<select id="selectMethylationXYBySample" resultType="MethylationVO" parameterType="MethylationVO">
+		SELECT
+			A.beta_value AS x, 
+			(SELECT read_count FROM rna_seq WHERE gene_symbol = B.gene_symbol AND sample_id = A.sample_id) AS y
+		FROM dna_me A
+			LEFT OUTER JOIN dna_me_probe_gene B
+				ON A.probe_id = B.probe_id
+		WHERE B.gene_symbol = #{search_gene_symbol} 
+			AND A.probe_id = #{search_probe_id}
+			AND A.sample_id IN ( ''
+				<foreach collection="sampleList" item="sample" index="index" separator="," open=",">#{sample}</foreach>
+			)
+		ORDER BY A.sample_id, B.idx
+	</select>
+	
+	<select id="selectExpMethList" resultType="exp_meth_corr_resultVO">
+		SELECT * 
+		FROM exp_meth_corr_result A
+	</select>
+
+</mapper>

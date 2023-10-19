@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="accountMapper">
+	
+	<sql id="BaseWhere">
+		WHERE del_yn = 'N'
+		AND site_code = #{site_code}		
+	</sql>		
+	
+	<sql id="MemberSelete" >
+		me_idx	,
+		me_id	,
+		me_pwd	,
+		me_name	,
+		auth_code	,
+		FN_AUTH_NAME(auth_code, site_code) AS auth_name,
+		substring(me_latest_login, 1, 20) as me_latest_login,
+		me_email	,
+		me_tel	,
+		me_email_yn	,
+		atch_file_id,
+		me_type	,
+		me_address1	,
+		me_address2	,
+		<!-- me_school	, -->
+		FN_CODE_NAME('default',site_code,'814',me_type) AS me_type_nm,
+		substring(cret_date, 1, 20) as cret_date
+	</sql>	
+	
+	<select id="AccountDAOgetMemberVOList" parameterType="MemberVO"  resultType="MemberVO">
+		SELECT 
+			<include refid="MemberSelete"/>
+		FROM tbl_member
+		<include refid="BaseWhere"/>
+		<![CDATA[ 
+			AND me_name = #{me_name}
+		 ]]>
+	</select>
+	
+	<select id="AccountDAOgetMemberVO" parameterType="MemberVO"  resultType="MemberVO">
+		SELECT 
+			<include refid="MemberSelete"/>
+		FROM tbl_member
+		<include refid="BaseWhere"/>
+		<![CDATA[ 
+			AND me_id = #{me_id}
+			AND me_email = #{me_email}
+		 ]]>
+	</select>	
+
+
+	<!-- 비밀번호 초기화 -->
+	<update id="AccountDAOinitPassword" parameterType="MemberVO">
+		UPDATE tbl_member SET
+			me_pwd		= #{me_pwd},
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #{modi_id}	,
+			modi_ip 	= #{modi_ip}
+		<include refid="BaseWhere"/>
+		AND me_id = #{me_id}
+	</update>
+</mapper>

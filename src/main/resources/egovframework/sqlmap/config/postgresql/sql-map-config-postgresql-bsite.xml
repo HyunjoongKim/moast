@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/home/home.xml"/>
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/account/login.xml"/>   	<!-- 로그인 관련 -->  
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/account/account.xml"/> 	<!-- 회원가입/아이디찾기/비밀번호찾기 -->  
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/account/myPage.xml"/>  	<!-- 마이페이지 - 회원정보수정,비밀번호변경 -->
+   
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/gnb02/lnb01.xml"/>  		<!-- 장비관리  -->  
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/gnb03/lnb01.xml"/>  		<!-- 프로토콜관리 --> 
+   
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/meta/meta.xml"/>  		<!-- 메타데이터 메인 관리 -->  
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/meta/metasub.xml"/>      <!-- 메타데이터 서브 관리 -->  
+   
+   <sqlMap resource="egovframework/sqlmap/postgresql/bsite/gnb01/lnb02.xml"/>      <!-- 메타데이터 세트트리 관리 -->  
+</sqlMapConfig>

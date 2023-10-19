@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="correlationMapper">
+	<select id="selectCorrelationXYBySample" resultType="CorrelationScatterVO" parameterType="OmicsDataVO">
+		SELECT
+			A.beta_value AS x, 
+			(SELECT val FROM mo_exp_tpm${ud_idx} WHERE gene_symbol = B.ref_gene AND sample_id = A.sample_id) AS y
+		FROM mo_meth${ud_idx} A
+			LEFT OUTER JOIN mo_epic850k B
+				ON A.probe_id = B.probe_id
+		WHERE B.ref_gene = #{searchGeneSymbol} 
+			AND B.probe_id = #{searchProbeId}
+			AND A.sample_id IN ( ''
+				<foreach collection="searchSampleList" item="sample" index="index" separator="," open=",">#{sample}</foreach>
+			)
+		ORDER BY A.sample_id
+	</select>
+	
+	<!-- 
+	
+	<select id="selectMethylationXY" resultType="MethylationVO" parameterType="MethylationVO">
+		SELECT
+			A.beta_value AS x, 
+			(SELECT read_count FROM rna_seq WHERE gene_symbol = B.gene_symbol AND sample_id = A.sample_id) AS y
+		FROM dna_me A
+			LEFT OUTER JOIN dna_me_probe_gene B
+				ON A.probe_id = B.probe_id
+			LEFT OUTER JOIN sample_patient_match C
+				ON A.sample_id = C.sample_id
+		WHERE B.gene_symbol = #{search_gene_symbol} AND A.probe_id = #{search_probe_id}		
+		ORDER BY A.sample_id, B.idx
+	</select>
+	
+	<select id="selectExpMethListMo" resultType="exp_meth_corr_resultVO">
+		SELECT * 
+		FROM exp_meth_corr_result A
+	</select>
+ -->
+</mapper>

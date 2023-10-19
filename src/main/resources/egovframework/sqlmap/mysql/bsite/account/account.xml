@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bsite.account.account">
+	
+	<typeAlias  alias="MemberVO" type="com.bsite.vo.MemberVO"/>
+	
+	<select id="AccountDAO.getMemberVOList" parameterClass="MemberVO"  resultClass="MemberVO">
+		SELECT 
+			<include refid="Member.Selete"/>
+		FROM tbl_member
+		<include refid="Base.Where"/>
+		<![CDATA[ 
+			AND me_name = #me_name#
+		 ]]>
+	</select>
+	
+	<select id="AccountDAO.getMemberVO" parameterClass="MemberVO"  resultClass="MemberVO">
+		SELECT 
+			<include refid="Member.Selete"/>
+		FROM tbl_member
+		<include refid="Base.Where"/>
+		<![CDATA[ 
+			AND me_id = #me_id#
+			AND me_email = #me_email#
+		 ]]>
+	</select>	
+
+
+	<!-- 비밀번호 초기화 -->
+	<update id="AccountDAO.initPassword" parameterClass="MemberVO">
+		UPDATE tbl_member SET
+			me_pwd		= #me_pwd#,
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #modi_id#		,
+			modi_ip 	= #modi_ip#
+		<include refid="Base.Where"/>
+		AND me_id = #me_id#
+	</update>
+</sqlMap>

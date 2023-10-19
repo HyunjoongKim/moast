@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="File">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="FileVO" type="egovframework.com.cmm.service.FileVO"/>
+
+	<resultMap id="fileList" class="egovframework.com.cmm.service.FileVO">
+		<result property="atchFileId"    column="atch_file_id"/>
+		<result property="fileCn"        column="file_cn" />
+		<result property="fileExtsn"     column="file_extsn"/>
+		<result property="fileMg"        column="file_size" />
+		<result property="fileSn"        column="file_sn" />
+		<result property="fileStreCours" column="file_stre_cours" />
+		<result property="orignlFileNm"  column="orignl_file_nm" />
+		<result property="streFileNm"    column="stre_file_nm" />
+		<result property="creatDt"       column="creat_dt" />	
+		<result property="site_code"     column="site_code" />			
+	</resultMap>
+
+	<resultMap id="fileDetail" class="egovframework.com.cmm.service.FileVO">
+		<result property="atchFileId"       column="atch_file_id"/>
+		<result property="fileCn"           column="file_cn"/>
+		<result property="fileExtsn"        column="file_extsn"/>
+		<result property="fileMg"           column="file_size" />
+		<result property="fileSn"           column="file_sn" />
+		<result property="fileStreCours"    column="file_stre_cours"/>
+		<result property="orignlFileNm"     column="orignl_file_nm" />
+		<result property="streFileNm"       column="stre_file_nm" />
+		<result property="site_code"        column="site_code" />
+	</resultMap>	
+
+
+    
+
+ 	<select id="FileManageDAO.selectFileList" parameterClass="FileVO" resultMap="fileList" >
+ 		<![CDATA[
+			select 
+				a.atch_file_id, b.file_cn, b.file_sn, b.file_stre_cours, b.stre_file_nm,
+				b.file_extsn, b.orignl_file_nm, b.file_size, a.creat_dt ,a.site_code
+			from
+				comtnfile a, comtnfiledetail b
+			where
+				a.atch_file_id = #atchFileId#
+			and 
+				a.atch_file_id = b.atch_file_id
+			and 
+				a.use_at = 'Y'				
+			order by b.file_sn	
+ 		]]>
+ 	</select>
+ 	
+ 	<select id="FileManageDAO.selectFileInfsByFileName" parameterClass="FileVO" resultMap="fileList" >
+ 		<![CDATA[
+			select 
+				a.atch_file_id, b.file_cn, b.file_sn, b.file_stre_cours, b.stre_file_nm,
+				b.file_extsn, b.orignl_file_nm, b.file_size, a.creat_dt ,a.site_code
+			from
+				comtnfile a, comtnfiledetail b
+			where
+				a.atch_file_id = #atchFileId#
+			AND 
+				a.atch_file_id = b.ATCH_FILE_ID
+			AND 
+				a.use_at = 'Y'		
+			AND
+				b.stre_file_nm = #streFileNm#
+			order by b.file_sn	
+ 		]]>
+ 	</select>
+ 	
+	<insert id="FileManageDAO.insertFileMaster" parameterClass="FileVO" >
+		<![CDATA[
+			insert into comtnfile
+			(atch_file_id, creat_dt, use_at,site_code)
+			values
+			( #atchFileId#, sysdate(), 'Y',#site_code#)			
+		]]>
+	</insert>
+	
+	<insert id="FileManageDAO.insertFileDetail" parameterClass="FileVO" >
+		<![CDATA[
+			insert into comtnfiledetail
+			( atch_file_id, file_sn, file_stre_cours, stre_file_nm, 
+			  orignl_file_nm, file_extsn, file_size, file_cn ,site_code)
+			VALUES
+			( #atchFileId#, #fileSn#, #fileStreCours#, #streFileNm#, 
+			  #orignlFileNm#, #fileExtsn#, #fileMg#, #fileCn# ,#site_code#)			
+		]]>
+	</insert>	
+	
+	<delete id="FileManageDAO.deleteFileDetail" parameterClass="FileVO" >
+		<![CDATA[
+			delete from comtnfiledetail
+			where
+				atch_file_id = #atchFileId#
+				and site_code=#site_code#
+				and	file_sn = #fileSn#			
+		]]>	
+	</delete>
+	
+	
+	<select id="FileManageDAO.getMaxFileSN" parameterClass="FileVO" resultClass="java.lang.Integer">
+		<![CDATA[
+			select ifnull(max(file_sn),0)+1 as file_sn
+			from comtnfiledetail
+			where atch_file_id =  #atchFileId#		
+		]]>
+	</select>
+
+ 	<select id="FileManageDAO.selectFileInf" parameterClass="FileVO" resultMap="fileDetail" >
+ 		<![CDATA[
+			select 
+				atch_file_id, file_cn, file_sn, file_stre_cours, stre_file_nm,
+				file_extsn, orignl_file_nm, file_size  , site_code
+			from
+				comtnfiledetail
+			where
+				atch_file_id = #atchFileId# 
+				and site_code=#site_code#
+			and 
+				file_sn = #fileSn#	
+ 		]]>
+ 	</select>
+
+	<update id="FileManageDAO.deleteCOMTNFILE" parameterClass="FileVO" >
+		<![CDATA[
+			update comtnfile
+			set use_at = 'n'
+			where atch_file_id = #atchFileId#
+			and site_code=#site_code#
+		]]>
+	</update>
+
+ 	<select id="FileManageDAO.selectFileListByFileNm" parameterClass="FileVO" resultMap="fileList" >
+ 		<![CDATA[
+			select 
+				a.atch_file_id, b.file_cn, b.file_sn, b.file_stre_cours, b.stre_file_nm,
+				b.file_extsn, b.orignl_file_nm, b.file_size, a.creat_dt ,a.site_code
+			from
+				comtnfile a, comtnfiledetail b
+			where
+				a.atch_file_id = b.atch_file_id
+			and 
+				a.use_at = 'Y'
+ 		]]>
+			<isEqual prepend="AND" property="searchCnd" compareValue="streFileNm">
+				<![CDATA[	b.stre_file_nm like concat('%', #searchWrd#,'%') 		]]>
+			</isEqual>
+			<isEqual prepend="AND" property="searchCnd" compareValue="orignlFileNm">
+				<![CDATA[	b.orignl_file_nm like concat('%', #searchWrd#,'%') 		]]>
+			</isEqual>	
+		<![CDATA[			
+			order by a.atch_file_id, b.file_sn	
+			limit #recordCountPerPage# offset #firstIndex#
+		]]>		 		
+ 	</select>
+
+ 	<select id="FileManageDAO.selectFileListCntByFileNm" parameterClass="FileVO" resultClass="java.lang.Integer" >
+ 		<![CDATA[
+			select 
+				count(a.atch_file_id)
+			from
+				comtnfile a, comtnfiledetail b
+			where
+				a.atch_file_id = b.atch_file_id
+			and 
+				a.use_at = 'Y'				
+ 		]]>
+			<isEqual prepend="AND" property="searchCnd" compareValue="streFileNm">
+				<![CDATA[	b.stre_file_nm like concat('%', #searchWrd#,'%') 		]]>
+			</isEqual>
+			<isEqual prepend="AND" property="searchCnd" compareValue="orignlFileNm">
+				<![CDATA[	b.orignl_file_nm like concat('%', #searchWrd#,'%') 		]]>
+			</isEqual>	 		
+ 	</select>
+ 	
+  	<select id="FileManageDAO.selectImageFileList" parameterClass="FileVO" resultMap="fileList" >
+ 		<![CDATA[
+			select 
+				a.atch_file_id, b.file_cn, b.file_sn, b.file_stre_cours, b.stre_file_nm,
+				b.file_extsn, b.orignl_file_nm, b.file_size, a.creat_dt ,a.site_code
+			from
+				comtnfile a, comtnfiledetail b
+			where
+				a.atch_file_id = #atchFileId#
+			and 
+				a.atch_file_id = b.atch_file_id
+			and
+				upper(b.file_extsn) in ('gif','jpg','bmp','png','jpeg')
+			and 
+				a.use_at = 'Y'				
+			order by b.file_sn	
+ 		]]>
+ 	</select>	
+ 	
+ 	<select id="FileManageDAO.getAtchNextFileId"  resultClass="string" >
+ 		<![CDATA[
+			select concat ('file_', ifnull(substring(max(atch_file_id), 6, 12), concat('1','00000000000')) + 1 )
+			from comtnfile
+			where substring(atch_file_id, 1, 5) = 'file_'
+ 		]]>
+ 	</select>	
+ 	
+ 	
+ 	<select id="FileManageDAO.getSubFileTableRow" parameterClass="string"  resultClass="int" >
+ 		<![CDATA[
+			select count(atch_file_id) from comtnfiledetail
+			where atch_file_id=#atchFileId#
+ 		]]>
+ 	</select>	
+ 	
+ 	<select id="FileManageDAO.isMainFileTableRow" parameterClass="map"  resultClass="int" >
+ 		<![CDATA[
+			select count(atch_file_id) from comtnfile
+			where atch_file_id=#atch_file_id#
+			and site_code=#site_code#
+			and use_at='Y'
+ 		]]>
+ 	</select>	
+
+ 	
+ 	
+</sqlMap>

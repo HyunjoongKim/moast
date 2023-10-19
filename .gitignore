@@ -1,0 +1,36 @@
+# jRebel
+/src/main/resources/rebel.xml
+
+
+# IntelliJ IDEA
+.idea/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/nbactions.xml
+
+# Compiled class file
+*.class
+
+# Log files
+*.log
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Gradle
+build/
+
+# Maven
+target/

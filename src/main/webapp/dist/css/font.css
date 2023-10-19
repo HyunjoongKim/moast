@@ -1,0 +1,86 @@
+@charset "utf-8";
+
+@font-face {
+font-family: 'Noto Sans KR';
+font-style: normal;
+font-weight: 200;
+src: local('Noto Sans Light'), local('NotoSans-Thin'), url(fonts/NotoSans-Thin.eot);
+src: url(fonts/NotoSans-Thin.eot?#iefix) format('embedded-opentype'),
+url(fonts/NotoSans-Thin.woff2) format('woff2'),
+url(fonts/NotoSans-Thin.woff) format('woff');;
+}
+@font-face {
+font-family: 'Noto Sans KR';
+font-style: normal;
+font-weight: 200;
+src: local('Noto Sans Light'), local('NotoSans-DemiLight'), url(fonts/NotoSans-DemiLight.eot);
+src: url(fonts/NotoSans-DemiLight.eot?#iefix) format('embedded-opentype'),
+url(fonts/NotoSans-DemiLight.woff2) format('woff2'),
+url(fonts/NotoSans-DemiLight.woff) format('woff');;
+}
+@font-face {
+font-family: 'Noto Sans KR';
+font-style: normal;
+font-weight: 300;
+src: local('Noto Sans Light'), local('NotoSans-Light'), url(fonts/NotoSans-Light.eot);
+src: url(fonts/NotoSans-Light.eot?#iefix) format('embedded-opentype'),
+url(fonts/NotoSans-Light.woff2) format('woff2'),
+url(fonts/NotoSans-Light.woff) format('woff');;
+}
+@font-face {
+font-family: 'Noto Sans KR';
+font-style: normal;
+font-weight: 400;
+src: local('Noto Sans Regular'), local('NotoSans-Regular'), url(fonts/NotoSans-Regular.eot);
+src: url(fonts/NotoSans-Regular.eot?#iefix) format('embedded-opentype'),
+url(fonts/NotoSans-Regular.woff2) format('woff2'),
+url(fonts/NotoSans-Regular.woff) format('woff');
+}
+@font-face {
+font-family: 'Noto Sans KR';
+font-style: normal;
+font-weight: 500;
+src: local('Noto Sans Medium'), local('NotoSans-Medium'), url(fonts/NotoSans-Medium.eot);
+src: url(fonts/NotoSans-Medium.eot?#iefix) format('embedded-opentype'),
+url(fonts/NotoSans-Medium.woff2) format('woff2'),
+url(fonts/NotoSans-Medium.woff) format('woff');
+}
+@font-face {
+font-family: 'Noto Sans KR';
+font-style: normal;
+font-weight: 600;
+src: local('Noto Sans Bold'), local('NotoSans-Bold'), url(fonts/NotoSans-Bold.eot);
+src: url(fonts/NotoSans-Bold.eot?#iefix) format('embedded-opentype'),
+url(fonts/NotoSans-Bold.woff2) format('woff2'),
+url(fonts/NotoSans-Bold.woff) format('woff');
+}
+@font-face {
+font-family: 'Noto Sans KR';
+font-style: normal;
+font-weight: 700;
+src: local('Noto Sans Bold'), local('NotoSans-Black'), url(fonts/NotoSans-Black.eot);
+src: url(fonts/NotoSans-Black.eot?#iefix) format('embedded-opentype'),
+url(fonts/NotoSans-Black.woff2) format('woff2'),
+url(fonts/NotoSans-Black.woff) format('woff');
+}
+
+
+
+@font-face{
+	 font-family: 'GmarketSansBold';
+	src: url('fonts/GmarketSansBold.woff') format('woff');
+	font-weight:400;
+	font-style:normal
+}
+@font-face{
+	 font-family: 'GmarketSansMedium';
+	src: url('fonts/GmarketSansMedium.woff') format('woff');
+	font-weight:400;
+	font-style:normal
+}
+@font-face{
+	 font-family: 'GmarketSansLight';
+	src: url('fonts/GmarketSansLight.woff') format('woff');
+	font-weight:400;
+	font-style:normal
+}

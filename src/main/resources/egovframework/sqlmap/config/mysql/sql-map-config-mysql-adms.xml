@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+   <sqlMap resource="egovframework/sqlmap/mysql/bsite/common/base.xml"/>
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/member/authManage.xml"/>  		<!-- 회원 - 권한관리 관련 -->
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/common/menu/menuauth.xml"/>  	<!-- 회원 - 메뉴  관련 -->
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/common/right/right.xml"/>  	<!-- 회원 - 메뉴 권한부여 관련 -->
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/common/code/code.xml"/> 		<!-- 공통 - 공통코드 관련 -->
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/member/memberManage.xml"/>  	<!-- 회원 - 회원관리 관련 -->
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/board/boardManage.xml"/>  		<!-- 게시판 - 게시판관리 관련 -->
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/contents/popupManage.xml"/>  		<!-- 컨텐츠- 팝업관리 관련 -->
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/contents/bannerManage.xml"/>  		<!-- 컨텐츠- 배너관리 관련 -->
+   <sqlMap resource="egovframework/sqlmap/mysql/adms/survey/surveymain.xml"/>	
+</sqlMapConfig>

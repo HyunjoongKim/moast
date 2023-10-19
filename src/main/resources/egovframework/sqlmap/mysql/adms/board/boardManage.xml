@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="adms.user.boardManage">
+	<typeAlias  alias="tbl_authcommonVO" type="com.bsite.vo.tbl_authcommonVO"/>
+	
+	<sql id="Board.Selete" >
+		au_pkid	,
+		au_title	,
+		ag_code	,
+		au_type	,
+		au_sort	,
+		au_typedirectory	,
+		au_secret_yn	,
+		au_reply_yn	,
+		au_memo_yn	,
+		au_category_yn	,
+		au_category2_yn	,
+		au_listcount	,
+		au_pagescale	,
+		au_filesize	,
+		au_admin	,
+		au_thum_yn	,
+		au_thum_width	,
+		au_thum_height	,
+		au_addfile_yn	,
+		au_file_count	,
+		au_edit_yn	,
+		au_left_menu_code	,
+		au_cate_list
+	</sql>
+	
+	<!-- 게시판 목록 -->
+    <select id="BoardManageDAO.getBoardList" parameterClass="tbl_authcommonVO"  resultClass="tbl_authcommonVO">
+		SELECT 
+			<include refid="Board.Selete"/>
+		FROM tbl_authcommon
+		<include refid="Base.Where"/>
+		<![CDATA[			
+			Order by au_pkid desc
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+		]]>				
+	</select>	
+	
+	<!-- 게시판 목록 cnt -->
+	<select id="BoardManageDAO.getBoardListCnt" parameterClass="tbl_authcommonVO" resultClass="java.lang.Integer" >
+		SELECT 
+			COUNT(*)
+		FROM tbl_authcommon
+		<include refid="Base.Where"/>
+	</select>
+	
+	<!-- 게시판 등록 -->
+	<insert id="BoardManageDAO.insertBoardVO" parameterClass="tbl_authcommonVO" >
+		<![CDATA[
+			INSERT INTO tbl_authcommon
+			( 
+				au_title	,
+				ag_code	,
+				au_type	,
+				au_sort	,
+				au_typedirectory	,
+				au_secret_yn	,
+				au_reply_yn	,
+				au_memo_yn	,
+				au_category_yn	,
+				au_cate_list,
+				au_category2_yn	,
+				au_listcount	,
+				au_pagescale	,
+				au_filesize	,
+				au_admin	,
+				au_thum_yn	,
+				au_thum_width	,
+				au_thum_height	,
+				au_addfile_yn	,
+				au_file_count	,
+				au_edit_yn	,
+				au_left_menu_code	,
+				site_code	,
+				cret_date	,
+				cret_id		,
+				cret_ip		,
+				del_yn		
+			)
+			VALUES
+			( 
+				#au_title#,
+				#ag_code#,
+				#au_type#,
+				#au_sort#,
+				#au_typedirectory#,
+				#au_secret_yn#,
+				#au_reply_yn#,
+				#au_memo_yn#,
+				#au_category_yn#,
+				#au_cate_list#,
+				#au_category2_yn#,
+				#au_listcount#,
+				#au_pagescale#,
+				#au_filesize#,
+				#au_admin#,
+				#au_thum_yn#,
+				#au_thum_width#,
+				#au_thum_height#,
+				#au_addfile_yn#,
+				#au_file_count#,
+				#au_edit_yn#,
+				#au_left_menu_code#,
+				#site_code#	,
+				now()	,
+				#cret_id#	,
+				#cret_ip#	,
+				'N'			
+			)			
+		]]>
+	</insert>
+	
+	<!-- 게시판 조회 -->
+    <select id="BoardManageDAO.getBoardVO" parameterClass="tbl_authcommonVO"  resultClass="tbl_authcommonVO">
+		SELECT 
+			<include refid="Board.Selete"/>	
+		FROM tbl_authcommon
+		<include refid="Base.Where"/>
+		AND au_pkid = #au_pkid#		
+	</select>	
+	
+	<!-- 게시판 수정 -->
+	<update id="BoardManageDAO.updateBoardVO" parameterClass="tbl_authcommonVO">
+		UPDATE tbl_authcommon SET
+			au_title  =  #au_title#,
+			au_type  =  #au_type#,
+			au_sort  =  #au_sort#,
+			au_typedirectory  =  #au_typedirectory#,
+			au_secret_yn  =  #au_secret_yn#,
+			au_reply_yn  =  #au_reply_yn#,
+			au_memo_yn  =  #au_memo_yn#,
+			au_category_yn  =  #au_category_yn#,
+			au_cate_list	= #au_cate_list#,
+			au_category2_yn  =  #au_category2_yn#,
+			au_listcount  =  #au_listcount#,
+			au_pagescale  =  #au_pagescale#,
+			au_filesize  =  #au_filesize#,
+			au_admin  =  #au_admin#,
+			au_thum_yn  =  #au_thum_yn#,
+			au_thum_width  =  #au_thum_width#,
+			au_thum_height  =  #au_thum_height#,
+			au_addfile_yn  =  #au_addfile_yn#,
+			au_file_count  =  #au_file_count#,
+			au_edit_yn  =  #au_edit_yn#,
+			au_left_menu_code  =  #au_left_menu_code#,
+			modi_date 	= now()		,
+			modi_id 	= #modi_id#		,
+			modi_ip 	= #modi_ip#
+		<include refid="Base.Where"/>
+		AND au_pkid = #au_pkid#
+	</update>
+	
+	<!-- 게시판 삭제 -->
+	<update id="BoardManageDAO.deleteBoardVO" parameterClass="tbl_authcommonVO">
+		UPDATE tbl_authcommon SET
+			del_yn		= 'Y'			,
+			modi_date 	= now()		,
+			modi_id 	= #modi_id#		,
+			modi_ip 	= #modi_ip#
+		<include refid="Base.Where"/>
+		AND au_pkid = #au_pkid#
+	</update>
+	
+	<!-- 게시판 코드 중복 체크 -->
+	<select id="BoardManageDAO.getBoardCodeCnt" parameterClass="tbl_authcommonVO" resultClass="java.lang.Integer" >
+		SELECT 
+			COUNT(*)
+		FROM tbl_authcommon 
+		WHERE site_code = #site_code#
+		AND ag_code = #ag_code#
+	</select>
+	
+	
+</sqlMap>

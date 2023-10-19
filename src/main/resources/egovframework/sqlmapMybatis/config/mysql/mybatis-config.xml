@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "HTTP://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+<typeAliases>
+	<typeAlias alias="MemberVO" type="com.bsite.vo.MemberVO"/>
+	<typeAlias alias="AuthVO" type="com.bsite.vo.AuthVO"/>
+		
+	<typeAlias alias="CommonCodeVO" type="com.bsite.vo.CommonCodeVO"/>
+	<typeAlias alias="tbl_authcommonVO" type="com.bsite.vo.tbl_authcommonVO"/>
+	
+	<typeAlias  alias="tblMenuManageVO" type="com.bsite.vo.tbl_menu_manageVO"/>
+	<typeAlias  alias="tblMenuSubVO" type="com.bsite.vo.tbl_menu_subVO"/>
+	<typeAlias  alias="LoginVO" type="com.bsite.vo.LoginVO"/>
+   
+	<typeAlias  alias="tbl_pdsVO" type="com.bsite.vo.tbl_pdsVO"/>
+	<typeAlias  alias="tbl_commentVO" type="com.bsite.vo.tbl_commentVO"/>
+	<typeAlias  alias="tbl_authcommonVO" type="com.bsite.vo.tbl_authcommonVO"/>
+	
+	<typeAlias  alias="tbl_popupVO" type="com.bsite.vo.tbl_popupVO"/>
+	
+	<typeAlias  alias="tbl_bannerVO" type="com.bsite.vo.tbl_bannerVO"/>
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="FileVO" type="egovframework.com.cmm.service.FileVO"/>
+	
+	
+	<typeAlias  alias="tbl_menuLogVO" type="com.bsite.vo.tbl_menuLogVO"/>
+	<typeAlias  alias="tbl_siteLogVO" type="com.bsite.vo.tbl_siteLogVO"/>
+	
+	<typeAlias  alias="clinical_dataVO" type="com.bsite.vo.clinical_dataVO"/>
+	<typeAlias  alias="rna_seqVO" type="com.bsite.vo.rna_seqVO"/>
+	<typeAlias  alias="MethylationVO" type="com.bsite.vo.MethylationVO"/>
+	<typeAlias  alias="dna_meVO" type="com.bsite.vo.dna_meVO"/>
+	<typeAlias  alias="dna_me_cgiVO" type="com.bsite.vo.dna_me_cgiVO"/>
+	<typeAlias  alias="dna_me_probe_cgiVO" type="com.bsite.vo.dna_me_probe_cgiVO"/>
+	<typeAlias  alias="dna_me_probe_geneVO" type="com.bsite.vo.dna_me_probe_geneVO"/>
+	<typeAlias  alias="exp_meth_corr_resultVO" type="com.bsite.vo.exp_meth_corr_resultVO"/>
+	
+	<!-- data 02 -->
+	<typeAlias  alias="mo_clinicalVO" type="com.bsite.vo.mo_clinicalVO"/>			<!-- 임상정보 data 02 -->
+	<typeAlias  alias="mo_clinicalD2VO" type="com.bsite.vo.mo_clinicalD2VO"/>			<!-- 임상정보 D2 data 02 -->
+	<typeAlias  alias="mo_methVO" type="com.bsite.vo.mo_methVO"/>					<!-- Methylation data 02 -->
+	<typeAlias  alias="mo_file_logVO" type="com.bsite.vo.mo_file_logVO"/>			<!-- File log 02 -->
+	<typeAlias  alias="mo_epic850kVO" type="com.bsite.vo.mo_epic850kVO"/>			<!-- Methylation data 02 -->
+	<typeAlias  alias="mo_expVO" type="com.bsite.vo.mo_expVO"/>						<!-- Expression data 02 -->
+	<typeAlias  alias="SampleBaseVO" type="com.bsite.vo.SampleBaseVO"/>				<!-- SampleBase data 02 -->
+	<typeAlias  alias="OmicsDataVO" type="com.bsite.vo.OmicsDataVO"/>				<!-- SampleBase data 02 -->
+	<typeAlias  alias="CorrelationScatterVO" type="com.bsite.vo.CorrelationScatterVO"/>	<!-- Correlation data 02 -->
+	
+	<typeAlias  alias="mo_mutationVO" type="com.bsite.vo.mo_mutationVO"/>			<!-- mutation -->
+	<typeAlias  alias="mo_infiniumVO" type="com.bsite.vo.mo_infiniumVO"/>			<!-- Illumina Infinium -->
+	
+	<typeAlias  alias="mo_workspaceVO" type="com.bsite.vo.mo_workspaceVO"/>			<!-- 작업 -->
+	<typeAlias  alias="mo_work_presetVO" type="com.bsite.vo.mo_work_presetVO"/>		<!-- 작업 프리셋 -->
+	<typeAlias  alias="mo_historyVO" type="com.bsite.vo.mo_historyVO"/>				<!-- clinic 그룹 상세 -->
+	<typeAlias  alias="mo_history_shareVO" type="com.bsite.vo.mo_history_shareVO"/>	<!-- clinic 그룹 상세 -->
+	
+	<typeAlias  alias="mo_presetVO" type="com.bsite.vo.mo_presetVO"/>				<!-- 프리셋 -->
+	<typeAlias  alias="mo_preset_shareVO" type="com.bsite.vo.mo_preset_shareVO"/>	<!-- 프리셋 공유 -->
+	<typeAlias  alias="mo_studyVO" type="com.bsite.vo.mo_studyVO"/>					<!-- study -->
+	<typeAlias  alias="mo_heatmapVO" type="com.bsite.vo.mo_heatmapVO"/>				<!-- heatmap -->
+	<typeAlias  alias="mo_entrezVO" type="com.bsite.vo.mo_entrezVO"/>				<!-- entrez -->
+	
+	<typeAlias  alias="mo_userDataVO" type="com.bsite.vo.mo_analysisDataVO"/>		<!-- 사용자 데이터 셋 -->
+	<typeAlias  alias="mo_clinic_groupVO" type="com.bsite.vo.mo_clinic_groupVO"/>			<!-- clinic 그룹 -->
+	<typeAlias  alias="mo_clinic_group_dtlVO" type="com.bsite.vo.mo_clinic_group_dtlVO"/>	<!-- clinic 그룹 상세 -->
+	<typeAlias  alias="mo_sc_cell_geneVO" type="com.bsite.vo.mo_sc_cell_geneVO"/>			<!-- scRNA cell gene -->
+	<typeAlias  alias="mo_sc_scatterVO" type="com.bsite.vo.mo_sc_scatterVO"/>			<!-- scRNA cell gene -->
+	
+</typeAliases> 
+
+<mappers>
+    <!-- admin -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/adms/member/memberManageMapper.xml" />		<!-- 회원 - 회원관리 관련 -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/adms/member/authManageMapper.xml"/>  		<!-- 회원 - 권한관리 관련 -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/adms/common/menu/menuauthMapper.xml"/>  	<!-- 회원 - 메뉴  관련 -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/adms/common/right/rightMapper.xml"/>  		<!-- 회원 - 메뉴 권한부여 관련 -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/adms/common/code/codeMapper.xml"/> 			<!-- 공통 - 공통코드 관련 -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/adms/logmanager/LogManager.xml"/>         <!-- 로그 -->
+	
+	<!-- com -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/com/cmm/fms/EgovFile_SQL_MysqlMapper.xml"/> <!--파일 --> 
+	
+	<!-- bsite -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/home/homeMapper.xml"/>
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/account/loginMapper.xml"/> 		    <!-- 로그인 관련 -->  
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/account/accountMapper.xml"/> 			<!-- 회원가입/아이디찾기/비밀번호찾기 -->  
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/account/myPageMapper.xml"/>  			<!-- 마이페이지 - 회원정보수정,비밀번호변경 -->
+	
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/crc/methylationMapper.xml"/>  		<!-- MethylationMapper -->
+	
+	<!-- data 02 -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/mo/clinicMapper.xml"/>  				<!-- clinicMapper -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/mo/moMethylationMapper.xml"/>  		<!-- MethylationMapper -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/mo/correlationMapper.xml"/>  			<!-- CorrelationMapper -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/mo/historyMapper.xml"/>  				<!-- HistoryMapper -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/mo/presetMapper.xml"/>  				<!-- PresetMapper -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/mo/studyMapper.xml"/>  				<!-- StudyMapper -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/mo/heatmapMapper.xml"/>  				<!-- HeatmapMapper -->
+	<mapper resource="egovframework/sqlmapMybatis/mysql/bsite/mo/entrezMapper.xml"/>  				<!-- EntrezMapper -->
+	
+	
+</mappers>
+</configuration>
+

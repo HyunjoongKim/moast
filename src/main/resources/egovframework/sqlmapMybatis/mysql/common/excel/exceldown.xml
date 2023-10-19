@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="codeMapper">
+	
+	<sql id="MainWhere">
+		WHERE del_yn = 'N'
+	</sql>	
+	
+	
+	
+	<select id="ExcelDownListPlace" parameterType="placeVO"   resultType="placeVO">
+		select * from nbr_place <include refid="MainWhere"/> 
+		
+	</select>
+	
+</mapper>

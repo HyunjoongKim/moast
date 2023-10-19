@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="entrezMapper">
+	
+	<!-- mo_entrez -->
+	<select id="selectEntrezListByGenes" parameterType="mo_entrezVO" resultType="mo_entrezVO">
+		SELECT 
+			entrez_id,	symbol
+		FROM mo_entrez A
+		WHERE A.symbol IN ( ''
+			<foreach collection="geneList" item="gene" index="index" separator="," open=",">#{gene}</foreach>
+		)
+	</select>
+	
+	<select id="selectEntrezByIdx" parameterType="int" resultType="mo_entrezVO">
+		SELECT 
+			entrez_id,	symbol
+		FROM mo_entrez A
+		WHERE A.entrez_id = #{hm_idx}
+	</select>
+	
+	<select id="selectEntrezIdsByGenes" parameterType="mo_entrezVO" resultType="String">
+		SET SESSION group_concat_max_len = 10000;
+		
+		SELECT 
+			GROUP_CONCAT(entrez_id) AS ids
+		FROM mo_entrez A
+		WHERE A.symbol IN ( ''
+			<foreach collection="geneList" item="gene" index="index" separator="," open=",">#{gene}</foreach>
+		)
+	</select>
+
+		
+
+</mapper>

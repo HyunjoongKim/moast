@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rightMapper">
+
+	<sql id="BaseWhere">
+		WHERE del_yn = 'N'
+		AND site_code = #{site_code}		
+	</sql>
+		
+	<select id="MenuAuthDaogetRightList"  parameterType="tblMenuSubVO" resultType="tblMenuSubVO" >
+		select 
+			*
+		from tbl_menu_sub 
+		<include refid="BaseWhere"/> 
+		and menu_idx=#{menu_idx}
+	</select>
+	
+	
+	<select id="MenuAuthDaogetRightDetail"  parameterType="LoginVO" resultType="tblMenuSubVO" >
+		select * from tbl_menu_sub <include refid="BaseWhere"/> and menu_idx=#{menu_idx} and auth_code=#{authCode} 
+	</select>
+	
+	<insert id="MenuAuthDaocreateRight" parameterType="tblMenuSubVO">
+		INSERT INTO tbl_menu_sub
+		(
+		menu_idx,
+		auth_idx,
+		menu_code,
+		auth_code,
+		CREATE_R,
+		READ_R,
+		UPDATE_R,
+		DELETE_R,
+		LIST_R,
+		LABEL_R,
+		PRINT_R,
+		EXCEL_R,
+		REPLY_R,
+		CMT_R,
+		OPTION_A,
+		OPTION_B,
+		CODE_ETC,
+		site_code,
+		cret_date,
+		cret_id,
+		cret_ip
+		)
+		VALUES
+		(
+		#{menu_idx},
+		#{auth_idx},
+		#{menu_code},
+		#{auth_code},
+		#{CREATE_R},
+		#{READ_R},
+		#{UPDATE_R},
+		#{DELETE_R},
+		#{LIST_R},
+		#{LABEL_R},
+		#{PRINT_R},
+		#{EXCEL_R},
+		#{REPLY_R},
+		#{CMT_R},
+		#{OPTION_A},
+		#{OPTION_B},
+		#{CODE_ETC},
+		#{site_code},
+		sysdate(),
+		#{cret_id},
+		#{cret_ip}
+		)
+		
+		<selectKey keyProperty="insertId" resultType="java.lang.Integer" >
+           SELECT LAST_INSERT_ID()
+       	</selectKey>
+	</insert>
+	
+	<delete id="MenuAuthDaodeleteRight" parameterType="java.util.HashMap">
+		delete from  tbl_menu_sub <include refid="BaseWhere"/> 
+		and menu_idx=#{menu_idx}
+	</delete>
+</mapper>

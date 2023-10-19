@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="homeMapper">
+	
+	<select id="bsitehomegetTest" resultType="java.util.HashMap">
+		SELECT * FROM TBL_TITLE_MENU
+	</select>
+	
+	<select id="bsitehomegetBoardList" resultType="tbl_pdsVO">
+		
+		SELECT * FROM tbl_pds 
+		WHERE site_code=#{site_code} 
+		<![CDATA[  AND pd_querystate <> 'D' ]]> 
+		AND pd_code=#{pd_code}
+		<if test="searchWord != null and searchWord != ''">
+			AND  (pd_title LIKE CONCAT('%',#{searchWord},'%')  or pd_content LIKE CONCAT('%',#{searchWord},'%')) 
+		</if> 
+		ORDER BY pd_pkid desc LIMIT #{limitCnt}
+		
+	</select>
+
+</mapper>

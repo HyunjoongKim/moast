@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib
+        PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+        "http://java.sun.com/j2ee/dtds/web-jsptaglib_1_1.dtd">
+
+
+<taglib>
+  <tlibversion>2.0</tlibversion>
+  <jspversion>1.1</jspversion>
+  <shortname>aBtn</shortname>
+  
+  <function>
+    <name>alink</name>
+    <function-class> com.bsite.cmm.AuthButtonTag</function-class>
+    <function-signature>
+        java.lang.String alink(boolean ,java.lang.String,java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+ 
+ 
+  <function>
+    <name>submit</name>
+    <function-class> com.bsite.cmm.AuthButtonTag</function-class>
+    <function-signature>
+        java.lang.String submit(boolean ,java.lang.String,java.lang.String)
+    </function-signature>
+  </function>
+ 
+  <function>
+    <name>alink_esui</name>
+    <function-class> com.bsite.cmm.AuthButtonTag</function-class>
+    <function-signature>
+        java.lang.String alink_esui(boolean ,java.lang.String,java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+ 
+  <function>
+    <name>floorZero</name>
+    <function-class> com.bsite.cmm.AuthButtonTag</function-class>
+    <function-signature>
+        java.lang.String floorZero(java.lang.Double)
+    </function-signature>
+  </function>
+ 
+ </taglib>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="historyMapper">
+	
+	<select id="selectHistoryList" parameterType="mo_historyVO" resultType="mo_historyVO">
+		SELECT ht_idx, wp_idx, ws_idx, ud_idx, me_idx, ht_title, ht_note, ht_type, FN_CODE_NAME('default', site_code, '819', ht_type) AS ht_type_nm,
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_history A
+		WHERE A.del_yn = 'N' AND ht_type = #{search_ht_type} AND me_idx = #{me_idx}	
+	</select>
+	
+	<select id="selectHistoryCount" parameterType="mo_historyVO" resultType="java.lang.Integer" >
+		SELECT
+			count(*) AS cnt
+		FROM mo_history A
+		WHERE A.del_yn = 'N' AND ht_type = #{search_ht_type} AND me_idx = #{me_idx}	
+	</select>
+	
+	<select id="selectHistoryByIdx" parameterType="int" resultType="mo_historyVO">
+		SELECT ht_idx, wp_idx, ws_idx, ud_idx, me_idx, ht_title, ht_note, ht_type, FN_CODE_NAME('default', site_code, '819', ht_type) AS ht_type_nm,
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_history A
+		WHERE A.del_yn = 'N' AND ht_type <![CDATA[<>]]> 'all' AND ht_idx = #{ht_idx}	
+	</select>
+	
+	<select id="selectHistoryOList" parameterType="mo_historyVO" resultType="mo_historyVO">
+		SELECT ht_idx, wp_idx, ws_idx, ud_idx, me_idx, ht_title, ht_note, ht_type, FN_CODE_NAME('default', site_code, '819', ht_type) AS ht_type_nm,
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_history A
+		WHERE A.del_yn = 'N' AND ht_type <![CDATA[<>]]> 'all' AND me_idx = #{me_idx}	
+	</select>
+	
+	<select id="selectHistoryOCount" parameterType="mo_historyVO" resultType="java.lang.Integer" >
+		SELECT
+			count(*) AS cnt
+		FROM mo_history A
+		WHERE A.del_yn = 'N' AND ht_type <![CDATA[<>]]> 'all' AND me_idx = #{me_idx}	
+	</select>
+	
+	<select id="selectHistorysList" parameterType="mo_history_shareVO" resultType="mo_history_shareVO">
+		SELECT hts_idx, wp_idx, ws_idx, ud_idx, me_idx, hts_title, hts_note, site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_history_share A
+		WHERE A.del_yn = 'N' AND target_me_idx = #{target_me_idx}	
+	</select>
+	
+	<select id="selectHistorysCount" parameterType="mo_history_shareVO" resultType="java.lang.Integer" >
+		SELECT
+			count(*) AS cnt
+		FROM mo_history_share A
+		WHERE A.del_yn = 'N' AND target_me_idx = #{target_me_idx}	
+	</select>
+	
+	<insert id="createHistory" parameterType="mo_historyVO" >
+		INSERT INTO mo_history
+			(wp_idx, ws_idx, ud_idx, me_idx, ht_title, ht_note, ht_type, site_code, cret_date, cret_id, cret_ip, del_yn)
+		VALUES 
+			(#{wp_idx}, #{ws_idx}, #{ud_idx}, #{me_idx}, #{ht_title}, #{ht_note}, #{ht_type}, #{site_code}, NOW(), #{cret_id}, #{cret_ip}, 'N')			
+	</insert>
+	
+	<update id="updateHistory" parameterType="mo_historyVO">
+		UPDATE mo_history SET
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE ht_idx = #{ht_idx}
+	</update>
+	
+	<update id="deleteHistory" parameterType="mo_historyVO">
+		UPDATE mo_history SET
+			del_yn		= 'Y',
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE ht_idx = #{ht_idx}
+	</update>			
+	
+	
+	
+	
+
+</mapper>

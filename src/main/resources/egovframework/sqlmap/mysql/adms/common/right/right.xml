@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="adms.common.right">
+	<typeAlias  alias="tblMenuManageVO" type="com.bsite.vo.tbl_menu_manageVO"/>
+	<typeAlias  alias="tblMenuSubVO" type="com.bsite.vo.tbl_menu_subVO"/>
+	<typeAlias  alias="LoginVO" type="com.bsite.vo.LoginVO"/>
+	<select id="MenuAuthDao.getRightList"  parameterClass="tblMenuSubVO" resultClass="tblMenuSubVO" >
+		select 
+			*
+		from tbl_menu_sub 
+		<include refid="Base.Where"/> 
+		and menu_idx=#menu_idx#
+	</select>
+	
+	
+	<select id="MenuAuthDao.getRightDetail"  parameterClass="LoginVO" resultClass="tblMenuSubVO" >
+		select * from tbl_menu_sub <include refid="Base.Where"/> and menu_idx=#menu_idx# and auth_code=#authCode# 
+	</select>
+	
+	<insert id="MenuAuthDao.createRight" parameterClass="tblMenuSubVO">
+		INSERT INTO tbl_menu_sub
+		(
+		menu_idx,
+		auth_idx,
+		menu_code,
+		auth_code,
+		CREATE_R,
+		READ_R,
+		UPDATE_R,
+		DELETE_R,
+		LIST_R,
+		LABEL_R,
+		PRINT_R,
+		EXCEL_R,
+		REPLY_R,
+		CMT_R,
+		OPTION_A,
+		OPTION_B,
+		CODE_ETC,
+		site_code,
+		cret_date,
+		cret_id,
+		cret_ip
+		)
+		VALUES
+		(
+		#menu_idx#,
+		#auth_idx#,
+		#menu_code#,
+		#auth_code#,
+		#CREATE_R#,
+		#READ_R#,
+		#UPDATE_R#,
+		#DELETE_R#,
+		#LIST_R#,
+		#LABEL_R#,
+		#PRINT_R#,
+		#EXCEL_R#,
+		#REPLY_R#,
+		#CMT_R#,
+		#OPTION_A#,
+		#OPTION_B#,
+		#CODE_ETC#,
+		#site_code#,
+		sysdate(),
+		#cret_id#,
+		#cret_ip#
+		)
+		
+		<selectKey keyProperty="insertId" resultClass="java.lang.Integer" >
+           SELECT LAST_INSERT_ID()
+       	</selectKey>
+	</insert>
+	
+	<delete id="MenuAuthDao.deleteRight" parameterClass="java.util.HashMap">
+		delete from  tbl_menu_sub <include refid="Base.Where"/> 
+		and menu_idx=#menu_idx#
+	</delete>
+</sqlMap>

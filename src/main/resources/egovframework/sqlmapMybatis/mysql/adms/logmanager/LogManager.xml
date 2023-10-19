@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="log.logmanager">
+	
+	
+	<select id="siteLogInsertPrevCheck" parameterType="tbl_siteLogVO"  resultType="tbl_siteLogVO">
+		SELECT 
+		IFNULL(-TIME_TO_SEC(TIMEDIFF(max(cret_date),sysdate())),0) as difsecond
+		,IFNULL((select sls_second from tbl_site_log_set where sls_idx=1),0) as sSecond
+		FROM tbl_site_log 
+		where site_code=#{site_code} 
+			and del_yn='N' 
+			and cookie_user=#{cookie_user} 
+	</select>	
+	
+	
+	<!-- and menu_idx=#{menu_idx}  -->
+	<select id="menuLogInsertPrevCheck" parameterType="tbl_menuLogVO"  resultType="tbl_menuLogVO">
+		SELECT 
+		IFNULL(-TIME_TO_SEC(TIMEDIFF(max(cret_date),sysdate())),0) as difsecond
+		,IFNULL((select sls_second from tbl_site_log_set where sls_idx=2),0) as sSecond
+		FROM tbl_menu_log 
+		where site_code=#{site_code} 
+			and del_yn='N' 
+			and url =#{url}
+			and cookie_user=#{cookie_user} 
+	</select>	
+	
+	<select id="siteLogBrowserinfo" parameterType="tbl_siteLogVO"  resultType="tbl_siteLogVO">
+		select browser as title,ifnull(count(browser),0) as cnt from tbl_site_log
+		where cret_date > date_add(now(),interval -365 day) group by browser order by cnt desc 
+	</select>	
+	<select id="siteLogOsinfo" parameterType="tbl_siteLogVO"  resultType="tbl_siteLogVO">
+		select os as title,ifnull(count(os),0) as cnt from tbl_site_log
+		where cret_date > date_add(now(),interval -365 day) group by os order by cnt desc 
+	</select>
+	
+	<select id="siteLogTodayinfo" parameterType="tbl_siteLogVO"  resultType="tbl_siteLogVO">
+		select @xtitle :=DATE_FORMAT(cret_date ,'%Y-%m-%d') as title
+		,Right(@xtitle,2) as xright
+ 		,count(*) as cnt  from tbl_site_log
+		where cret_date > date_add(now(),interval -7 day) group by DATE_FORMAT(cret_date ,'%Y-%m-%d')
+	</select>
+	
+	<select id="siteLogMonthinfo" parameterType="tbl_siteLogVO"  resultType="tbl_siteLogVO">
+		select 
+        @xtitle :=DATE_FORMAT(cret_date ,'%Y-%m') as title 
+        ,Right(@xtitle,2) as xright
+        ,count(*) as cnt  from tbl_site_log
+		where cret_date > date_add(now(),interval -180 day) group by DATE_FORMAT(cret_date ,'%Y-%m')	
+	</select>
+	
+	<select id="siteLogTotalCnt" parameterType="tbl_siteLogVO"  resultType="tbl_siteLogVO">
+		select 
+		@xdate:=DATE_FORMAT(cret_date ,'%Y-%m-%d') as title 
+		,@xnow:=DATE_FORMAT(now() ,'%Y-%m-%d') as now
+		,count(*) as cnt 
+		,case when @xdate=@xnow then 'today' else 'yesterday' end as cdate
+		from tbl_site_log
+		where cret_date > date_add(now(),interval -2 day) group by DATE_FORMAT(cret_date ,'%Y-%m-%d')
+	</select>
+	
+	
+	<select id="siteLogConnecttimeinfo" parameterType="tbl_siteLogVO"  resultType="tbl_siteLogVO">
+		select cast(DATE_FORMAT(D.title,'%H') as unsigned) as xright 
+		,min(cnt) as xmin
+		,max(cnt) as xmax
+		,avg(cnt) as xavg
+		from(        
+		select 
+		DATE_FORMAT(cret_date ,'%Y-%m-%d %H') as title 
+		,count(*) as cnt  
+		from tbl_site_log where 
+		cret_date > date_add(now(),interval -30 day) 
+		group by DATE_FORMAT(cret_date ,'%Y-%m-%d %H')
+		) D group by DATE_FORMAT(D.title,'%H')
+	</select>
+	
+	<select id="siteLogMenuTopCount" parameterType="tbl_menuLogVO"  resultType="tbl_menuLogVO">
+		select a.* , b.menu_name,b.menu_ordr,b.menu_depth 
+		from (
+			select url,menu_idx ,count(url) as cnt
+			from tbl_menu_log
+			where 
+			cret_date > date_add(now(),interval -90 day) 
+			and menu_idx > 0
+			group by url order by cnt desc 
+		) a left join tbl_menu_manage b on a.url=b.menu_code
+	</select>
+	
+	
+	<select id="siteLogGetPrtMenuCate" parameterType="tbl_menuLogVO"  resultType="tbl_menuLogVO">
+		
+		select GROUP_CONCAT(menu_name SEPARATOR  <![CDATA[' > ']]> ) as menu_name from tbl_menu_manage where menu_idx in(
+			select x._ID from (
+			SELECT @r AS _ID,
+			(SELECT @r := ptrn_code FROM tbl_menu_manage WHERE menu_idx = _ID  ) AS _PARENT_ID,
+			(SELECT @l := menu_depth FROM tbl_menu_manage WHERE menu_idx = _ID  ) AS menu_depth
+			FROM ( SELECT @r :=  #{menu_idx}) AS vars, (SELECT * FROM tbl_menu_manage) AS h
+			WHERE @r != 0 ) as x  order by menu_depth asc 
+		) and  menu_code!='root'
+	</select>
+	
+</mapper>

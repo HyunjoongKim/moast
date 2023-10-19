@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="adms.user.memberManage">
+	<typeAlias  alias="MemberVO" type="com.bsite.vo.MemberVO"/>
+	
+	<sql id="Member.Selete" >
+		me_idx	,
+		me_id	,
+		me_pwd	,
+		me_name	,
+		auth_code	,
+		FN_AUTH_NAME(auth_code, site_code) AS auth_name,
+		substring(me_latest_login, 1, 20) as me_latest_login,
+		me_email	,
+		me_tel	,
+		me_email_yn	,
+		atch_file_id,
+		kc_idx,
+		'' AS kc_name,
+		me_type	,
+		me_edu1	,
+		me_edu2	,
+		me_address1	,
+		me_address2	,
+		<!-- me_school	, -->
+		FN_CODE_NAME('default',site_code,'814',me_type) AS me_type_nm,
+		substring(cret_date, 1, 20) as cret_date
+	</sql>
+	
+	<sql id="Member.Where" >
+		<isNotEmpty prepend="AND" property="searchMeId">
+			<![CDATA[  me_id LIKE CONCAT('%', #searchMeId#,'%')  ]]> 
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchMeName">
+			<![CDATA[  me_name LIKE CONCAT('%', #searchMeName#,'%')  ]]> 
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchAuthCode">
+			<![CDATA[  auth_code = #searchAuthCode#	]]>
+		</isNotEmpty>
+	</sql>
+	
+	<!-- 회원 목록 -->
+    <select id="MemberManageDAO.getMemberList" parameterClass="MemberVO"  resultClass="MemberVO">
+		SELECT 
+			<include refid="Member.Selete"/>
+		FROM tbl_member
+		<include refid="Base.Where"/>
+		<include refid="Member.Where"/>
+		<![CDATA[			
+			Order by me_idx desc
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+		]]>				
+	</select>	
+	
+	<!-- 회원 목록 cnt -->
+	<select id="MemberManageDAO.getMemberListCnt" parameterClass="MemberVO" resultClass="java.lang.Integer" >
+		SELECT 
+			COUNT(*)
+		FROM tbl_member 
+		<include refid="Base.Where"/>
+		<include refid="Member.Where"/>
+	</select>
+	
+	<!-- 회원 등록 -->
+	<insert id="MemberManageDAO.insertMemberVO" parameterClass="MemberVO" >
+		<![CDATA[
+			INSERT INTO tbl_member
+			( 
+				me_id	,
+				me_pwd	,
+				me_name	,
+				auth_code	,
+				me_email	,
+				me_tel	,
+				me_email_yn	,
+				atch_file_id	,
+				kc_idx		,
+				me_type	,
+				me_edu1	,
+				me_edu2	,
+				me_address1	,
+				me_address2	,
+				/* me_school	,*/
+				
+				site_code	,
+				cret_date	,
+				cret_id		,
+				cret_ip		,
+				del_yn		
+			)
+			VALUES
+			( 
+				#me_id#,
+				#me_pwd#,
+				#me_name#,
+				#auth_code#,
+				#me_email#,
+				#me_tel#,
+				#me_email_yn#,
+				#atch_file_id#,
+				#kc_idx#	,
+				#me_type#	,
+				#me_edu1#	,
+				#me_edu2#	,
+				#me_address1#	,
+				#me_address2#	,
+				/* #me_school#	, */
+				
+				#site_code#	,
+				SYSDATE()	,
+				#cret_id#	,
+				#cret_ip#	,
+				'N'			
+			)			
+		]]>
+	</insert>
+	
+	<!-- 회원 조회 -->
+    <select id="MemberManageDAO.getMemberVO" parameterClass="MemberVO"  resultClass="MemberVO">
+		SELECT 
+			<include refid="Member.Selete"/>	
+		FROM tbl_member 
+		<include refid="Base.Where"/>
+		AND me_idx = #me_idx#
+	</select>	
+	
+	<!-- 회원 수정 -->
+	<update id="MemberManageDAO.updateMemberVO" parameterClass="MemberVO">
+		UPDATE tbl_member SET
+			
+			me_name		=	#me_name#,
+			me_email	=	#me_email#,
+			me_tel		=	#me_tel#,
+			me_email_yn	=	#me_email_yn#,
+			me_type		=	#me_type#,
+			me_edu1		=	#me_edu1#,
+			me_edu2		=	#me_edu2#,
+			me_address1	=	#me_address1#,
+			me_address2	=	#me_address2#,
+			<!-- me_school	=	#me_school#, -->
+			
+			<isNotEmpty property="me_pwd" >
+				me_pwd			=	#me_pwd#,
+			</isNotEmpty>
+			<isNotEmpty property="auth_code">
+				auth_code		=	#auth_code#,
+			</isNotEmpty>
+			<isNotEmpty property="atch_file_id">
+				atch_file_id		=	#atch_file_id#,
+			</isNotEmpty>
+			<isNotEmpty property="kc_idx">
+				kc_idx		=	#kc_idx#,
+			</isNotEmpty>
+			
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #modi_id#		,
+			modi_ip 	= #modi_ip#
+		<include refid="Base.Where"/>
+		AND me_idx = #me_idx#
+	</update>
+	
+	<!-- 회원 삭제 -->
+	<update id="MemberManageDAO.deleteMemberVO" parameterClass="MemberVO">
+		UPDATE tbl_member SET
+			del_yn		= 'Y'			,
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #modi_id#		,
+			modi_ip 	= #modi_ip#
+		<include refid="Base.Where"/>
+		AND me_idx = #me_idx#
+	</update>
+	
+	<!-- 아이디 중복 체크 -->
+	<select id="MemberManageDAO.getMemberIdCnt" parameterClass="MemberVO" resultClass="java.lang.Integer" >
+		SELECT 
+			COUNT(*)
+		FROM tbl_member 
+		WHERE site_code = #site_code#
+		AND me_id = #me_id#
+	</select>
+	
+	<!-- 권한 목록 -->
+	<select id="MemberManageDAO.getAuthList" parameterClass="java.util.HashMap"  resultClass="CommonCodeVO">
+		SELECT 
+			auth_code AS main_code,
+			auth_title AS code_name
+		FROM tbl_auth
+		<include refid="Base.Where"/>
+	</select>	
+	
+	<!-- 비밀번호 변경 -->
+	<update id="MemberManageDAO.updatePassword" parameterClass="MemberVO">
+		UPDATE tbl_member SET
+			<isNotEmpty property="me_pwd" >
+				me_pwd			=	#me_pwd#,
+			</isNotEmpty>
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #modi_id#		,
+			modi_ip 	= #modi_ip#
+		<include refid="Base.Where"/>
+		AND me_id = #me_id#
+	</update>
+	
+</sqlMap>

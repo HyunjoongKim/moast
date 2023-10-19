@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+	
+	
+	<!-- 관리자 베이스 레이아웃  -->
+	<!-- 	
+	<definition name="adms.base.layout" template="/WEB-INF/jsp/adms/shared/_layout.jsp" preparer="HeadmenuPreparer">
+		<put-attribute name="title" value="관리자페이지 메인" />
+		<put-attribute name="header" value="/WEB-INF/jsp/adms/shared/_header.jsp" />
+		<put-attribute name="leftAndFooter" value="/WEB-INF/jsp/adms/shared/_left.jsp" />
+		<put-attribute name="content" value="/WEB-INF/jsp/adms/home/_content.jsp" />
+	</definition>
+	 -->
+	
+	<definition name="adms.base.layout" template="/WEB-INF/jsp/adms/shared/_layout.jsp" preparer="AdmsHeaderPreparer">
+		<put-attribute name="title" value="관리자페이지 메인" />
+		<put-attribute name="header" value="/WEB-INF/jsp/adms/shared/_header.jsp" />
+		<put-attribute name="left" value="/WEB-INF/jsp/adms/shared/_left.jsp" />
+		<put-attribute name="content" value="/WEB-INF/jsp/adms/shared/_content.jsp" />
+		<put-attribute name="footer"  value="/WEB-INF/jsp/adms/shared/_footer.jsp" />
+	</definition>
+	
+	<!-- FRONT 베이스 레이아웃  -->
+	<definition name="bsite.base.layout" template="/WEB-INF/jsp/bsite/shared/_layout.jsp" preparer="BsiteHeaderPreparer">
+		<put-attribute name="title"   value="" />
+		<put-attribute name="header"  value="/WEB-INF/jsp/bsite/shared/_header.jsp" />
+		<put-attribute name="subVisual"  value="/WEB-INF/jsp/bsite/shared/_subVisual.jsp" />
+		<put-attribute name="left"    value="/WEB-INF/jsp/bsite/shared/_left.jsp" />
+		<put-attribute name="footer"  value="/WEB-INF/jsp/bsite/shared/_footer.jsp" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/shared/_content.jsp" />
+	</definition>
+	
+	<!-- FRONT 베이스 레이아웃  -->
+	<definition name="bsite.apart.layout" template="/WEB-INF/jsp/bsite/shared/_layout_apart.jsp" preparer="BsiteHeaderPreparer">
+		<put-attribute name="title"   value="" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/shared/_content.jsp" />
+	</definition>
+	
+	<!-- FRONT 메인화면 레이아웃  -->
+	<definition name="bsite.index.layout" template="/WEB-INF/jsp/bsite/shared/_layout_index.jsp" preparer="BsiteHeaderPreparer">
+		<put-attribute name="title"   value="" />
+		<put-attribute name="header"  value="/WEB-INF/jsp/bsite/shared/_header.jsp" />
+		<put-attribute name="subVisual"  value="/WEB-INF/jsp/bsite/shared/_subVisual.jsp" />
+		<put-attribute name="left"    value="/WEB-INF/jsp/bsite/shared/_left.jsp" />
+		<put-attribute name="footer"  value="/WEB-INF/jsp/bsite/shared/_footer.jsp" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/shared/_content.jsp" />
+	</definition>
+	
+	
+	<definition name="adms.login" template="/WEB-INF/jsp/adms/login/login.jsp">
+		<put-attribute name="title" value="관리자페이지 로그인페이지" />
+	</definition>
+	
+	<definition name="tiles:adms/*/**" extends="adms.base.layout">
+		<put-attribute name="title" value="관리자페이지 메인2" />
+		<put-attribute name="content" value="/WEB-INF/jsp/adms/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="admstiles:bsite/*/**" extends="adms.base.layout">
+		<put-attribute name="title" value="관리자페이지 메인2" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/{1}/{2}.jsp" />
+	</definition>
+	
+	<!-- front page /bsite/task/organization/list -->	
+	<definition name="tiles:bsite/*/**" extends="bsite.base.layout">
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="tiles:bsiteApart/*/**" extends="bsite.apart.layout">
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="tiles:bsiteIndex/*/**" extends="bsite.index.layout">
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/{1}/{2}.jsp" />
+	</definition>
+	
+	<!-- 게시판 패턴 -->	
+	<definition name="tiles:zboard/*/**" extends="bsite.base.layout">
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/zboard/zboard/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="admstiles:zboard/*/**" extends="adms.base.layout">
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/zboard/zboard/{1}/{2}.jsp" />
+	</definition>
+	
+	
+	
+	<!--  팝업  베이스 -->
+    <definition name="tilespopup:bsite/*/**" template="/WEB-INF/jsp/bsite/shared/popup/_layout.jsp" >
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/{1}/{2}.jsp"  /> 
+	</definition>
+    <!--  팝업  베이스 -->
+    
+    <!--  팝업  베이스 -->
+    <definition name="tilespopupadms:adms/*/**" template="/WEB-INF/jsp/bsite/shared/popup/_layout.jsp" >
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/adms/{1}/{2}.jsp"  /> 
+	</definition>
+    <!--  팝업  베이스 -->
+	
+	<!--  아이프레임 -->
+	<definition name="tilesIframe:bsite/*/**" template="/WEB-INF/jsp/bsite/shared/iframe/_layout.jsp" >
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/{1}/{2}.jsp" />
+	</definition>
+	<!-- 게시판 코멘트 -->
+	<definition name="tilesIframe:zcomment/*/**" template="/WEB-INF/jsp/bsite/shared/iframe/_layout.jsp" >
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/zboard/zboard/zcomment/{1}/{2}.jsp" />
+	</definition>
+	<!--  아이프레임 -->
+	
+	<!-- 프린트 -->
+	<definition name="tilesPrint:bsite/*/**" template="/WEB-INF/jsp/bsite/shared/print/_layout.jsp" >
+		<put-attribute name="title" expression="${empty requestScope.title ? '' : requestScope.title}" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="tiles:bbsegovframework/com/*/**" extends="bsite.base.layout"> 
+		<put-attribute name="title"   expression="${title}" />
+        <put-attribute name="content" value="/WEB-INF/jsp/egovframework/com/{1}/{2}.jsp" /> 
+    </definition> 	
+	
+	<definition name="tiles:egovframework/com/*/**" extends="adms.base.layout"> 
+        <put-attribute name="content" value="/WEB-INF/jsp/egovframework/com/{1}/{2}.jsp" /> 
+    </definition> 
+    	
+   	<!--  팝업 관리자 베이스 -->
+   	<definition name="tilespopup:egovframework/com/*/**" template="/WEB-INF/jsp/adms/shared/popup/_layout.jsp" >
+		<put-attribute name="title" value="관리자페이지 팝업" />
+		 <put-attribute name="content" value="/WEB-INF/jsp/egovframework/com/{1}/{2}.jsp" /> 
+	</definition>
+   	<!--  팝업 관리자 베이스 -->
+   	<!--  엑셀 베이스 -->
+   	<definition name="tilesexcel:adms/*/**" template="/WEB-INF/jsp/adms/shared/excel/_layout.jsp" >
+		<put-attribute name="content" value="/WEB-INF/jsp/adms/{1}/{2}.jsp" />
+	</definition>
+	<definition name="tilesexcel:bsite/*/**" template="/WEB-INF/jsp/bsite/shared/excel/_layout.jsp" >
+		<put-attribute name="content" value="/WEB-INF/jsp/bsite/{1}/{2}.jsp" />
+	</definition>
+   	<!--  엑셀 베이스 -->
+    	
+
+	
+
+	
+</tiles-definitions>

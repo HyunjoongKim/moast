@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="heatmapMapper">
+	
+	<!-- mo_heatmap -->
+	<select id="selectHeatmapListByPreset" parameterType="mo_heatmapVO" resultType="mo_heatmapVO">
+		SELECT 
+			hm_idx, ud_idx, me_idx, ps_idx, std_idx, hm_title, hm_note, hm_status, hm_type, FN_CODE_NAME('default', site_code, '819', hm_type) AS hm_type_nm, hm_json, 
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_heatmap A
+		WHERE A.del_yn = 'N' AND ps_idx = #{ps_idx}
+	</select>
+	
+	<select id="selectHeatmapCountByPreset" parameterType="mo_heatmapVO" resultType="java.lang.Integer" >
+		SELECT count(*) AS cnt
+		FROM mo_heatmap A
+		WHERE A.del_yn = 'N' AND ps_idx = #{ps_idx}	
+	</select>
+	
+	<select id="selectHeatmapByIdx" parameterType="int" resultType="mo_heatmapVO">
+		SELECT 
+			hm_idx, ud_idx, me_idx, ps_idx, std_idx, hm_title, hm_note, hm_status, hm_type, FN_CODE_NAME('default', site_code, '819', hm_type) AS hm_type_nm, hm_json, 
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_heatmap A
+		WHERE A.del_yn = 'N' AND hm_idx = #{hm_idx}
+	</select>
+	
+	<insert id="createHeatmap" parameterType="mo_heatmapVO" >
+		INSERT INTO mo_heatmap
+			(hm_idx, ud_idx, me_idx, ps_idx, std_idx, hm_title, hm_note, hm_status, hm_type, hm_json, 
+			site_code, cret_date, cret_id, cret_ip, del_yn)
+		VALUES 
+			(#{hm_idx}, #{ud_idx}, #{me_idx}, #{ps_idx}, #{std_idx}, #{hm_title}, #{hm_note}, #{hm_status}, #{hm_type}, '${hm_json}', 
+			#{site_code}, NOW(), #{cret_id}, #{cret_ip}, 'N')
+		
+		<selectKey resultType="int" keyProperty="hm_idx" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>		
+	</insert>
+	
+	<update id="updateHeatmap" parameterType="mo_heatmapVO">
+		UPDATE mo_heatmap SET
+			hm_title 	= #{hm_title},
+			hm_note 	= #{hm_note},
+			hm_status 	= #{hm_status},
+		--	hm_type 	= #{hm_type},
+			hm_json 	= #{hm_json},
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE hm_idx = #{hm_idx}
+	</update>
+	
+	<update id="deleteHeatmap" parameterType="mo_heatmapVO">
+		UPDATE mo_heatmap SET
+			del_yn		= 'Y',
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE hm_idx = #{hm_idx}
+	</update>			
+
+</mapper>

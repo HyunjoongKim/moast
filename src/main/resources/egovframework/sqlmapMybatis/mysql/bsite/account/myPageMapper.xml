@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="myPageMapper">
+	
+	<sql id="BaseWhere">
+		WHERE del_yn = 'N'
+		AND site_code = #{site_code}		
+	</sql>		
+	
+	<sql id="MemberSelete" >
+		me_idx	,
+		me_id	,
+		me_pwd	,
+		me_name	,
+		auth_code	,
+		FN_AUTH_NAME(auth_code, site_code) AS auth_name,
+		substring(me_latest_login, 1, 20) as me_latest_login,
+		me_email	,
+		me_tel	,
+		me_email_yn	,
+		atch_file_id,
+		me_type	,
+		me_address1	,
+		me_address2	,		
+		FN_CODE_NAME('default',site_code,'814',me_type) AS me_type_nm,
+		substring(cret_date, 1, 20) as cret_date,
+		
+		tmp_me_bth,
+		me_postno,
+		me_address1,
+		me_address2,
+		me_agency_type,
+		me_agency,
+		me_department,
+		me_position
+		
+		
+	</sql>	
+	
+	<!-- 회원 조회 -->
+    <select id="MyPageDAOgetMemberVO" parameterType="MemberVO"  resultType="MemberVO">
+		SELECT 
+			<include refid="MemberSelete"/>	
+		FROM tbl_member 
+		<include refid="BaseWhere"/>
+		AND me_id = #{me_id}
+	</select>
+	
+
+</mapper>

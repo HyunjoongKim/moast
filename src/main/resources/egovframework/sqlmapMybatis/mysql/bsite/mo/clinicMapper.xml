@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="clinicMapper">
+	
+	<select id="selectClinicList" parameterType="mo_clinicalVO" resultType="mo_clinicalVO">
+		SELECT
+			A.ud_idx, A.cd_idx, B.spm_idx, A.patient_id, B.sample_id, B.sample_type, 
+			A.cohort, A.sex, A.age_diag, A.pri_location, A.pri_location_side, A.pathology, 
+			A.differentiation, A.msi, A.stage, A.substage, A.t_diag, A.n_diag, A.lymphatic_invasion, 
+			A.venous_invasion, A.perineural_invasion, A.m_diag, A.meta_organs, A.dfs, A.recur, A.lvp
+		FROM mo_clinical A
+			INNER JOIN mo_sample_patient_match B ON A.ud_idx = B.ud_idx AND A.patient_id = B.patient_id
+		WHERE A.del_yn = 'N' AND B.del_yn = 'N'	
+		ORDER BY A.cd_idx, B.spm_idx
+	</select>
+	
+	<select id="selectClinicCount" parameterType="mo_clinicalVO" resultType="java.lang.Integer" >
+		SELECT
+			count(*) AS cnt
+		FROM mo_clinical A
+			INNER JOIN mo_sample_patient_match B ON A.ud_idx = B.ud_idx AND A.patient_id = B.patient_id
+		WHERE A.del_yn = 'N' AND B.del_yn = 'N'	
+	</select>
+	
+	<select id="selectClinicListBySample" parameterType="OmicsDataVO" resultType="mo_clinicalVO">
+		SELECT
+			A.ud_idx, A.cd_idx, B.spm_idx, A.patient_id, B.sample_id, B.sample_type, 
+			A.cohort, A.sex, A.age_diag, A.pri_location, A.pri_location_side, A.pathology, 
+			A.differentiation, A.msi, A.stage, A.substage, A.t_diag, A.n_diag, A.lymphatic_invasion, 
+			A.venous_invasion, A.perineural_invasion, A.m_diag, A.meta_organs, A.dfs, A.recur, A.lvp
+		FROM mo_clinical A
+			INNER JOIN mo_sample_patient_match B ON A.ud_idx = B.ud_idx AND A.patient_id = B.patient_id
+		WHERE A.del_yn = 'N' AND B.del_yn = 'N'
+			AND B.sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+	</select>
+	
+	<select id="selectClinicD2List" parameterType="mo_clinicalD2VO" resultType="mo_clinicalD2VO">
+		SELECT A.*
+		FROM mo_clinical2 A
+		WHERE A.del_yn = 'N'	
+		ORDER BY A.ud_idx, A.cd_idx
+	</select>
+	
+	<select id="selectClinicD2Count" parameterType="mo_clinicalD2VO" resultType="java.lang.Integer" >
+		SELECT
+			count(*) AS cnt
+		FROM mo_clinical2 A
+		WHERE A.del_yn = 'N'	
+		ORDER BY A.cd_idx, A.cd_idx
+	</select>
+	
+	<select id="selectClinicD2ListBySample" parameterType="OmicsDataVO" resultType="mo_clinicalD2VO">
+		SELECT A.*
+		FROM mo_clinical2 A
+		WHERE A.del_yn = 'N'	
+			AND A.sample_id IN
+			<foreach collection="sampleList" item="item" index="index" separator="," open="(" close=")">#{item}</foreach>
+		ORDER BY A.ud_idx, A.cd_idx
+	</select>
+	
+	<select id="selectClinicGrpList" parameterType="mo_clinic_groupVO" resultType="mo_clinic_groupVO">
+		SELECT
+			A.cg_idx, A.ud_idx, A.me_idx, A.cg_title, A.cg_note, A.cg_type, 
+			CASE WHEN cg_type = '2' THEN '2 Group' else '1 Group' END AS cg_type_nm
+		FROM mo_clinic_group A
+		WHERE A.del_yn = 'N' AND A.ud_idx = #{ud_idx} AND A.me_idx = #{me_idx} 
+		ORDER BY A.cg_idx DESC
+	</select>
+	
+	<select id="selectClinicGrpCount" parameterType="mo_clinic_groupVO" resultType="java.lang.Integer" >
+		SELECT
+			COUNT(*) AS cnt
+		FROM mo_clinic_group A
+		WHERE A.del_yn = 'N' AND A.ud_idx= #{ud_idx}	
+	</select>
+	
+	<select id="selectClinicGrpDtlList" parameterType="mo_clinic_groupVO" resultType="mo_clinic_group_dtlVO">
+		SELECT
+			A.cgd_idx, A.cg_idx, A.cg_no, A.sample_id
+		FROM mo_clinic_group_dtl A
+		WHERE A.del_yn = 'N' AND A.cg_idx= #{cg_idx}	
+		ORDER BY A.cgd_idx ASC
+	</select>
+	
+	<select id="selectClinicGrpDuplList" parameterType="mo_clinic_groupVO" resultType="mo_clinic_groupVO">
+		SET SESSION group_concat_max_len = 1000000;
+		
+		SELECT S.cg_idx, S.cg_title, S.cg_note, S.sample1, S.sample2
+		FROM (
+			SELECT G.cg_idx, G.cg_title, G.cg_note,
+				GROUP_CONCAT(IF(D.cg_no = 1, D.sample_id, NULL) ORDER BY D.sample_id) AS sample1, 
+				GROUP_CONCAT(IF(D.cg_no = 2, D.sample_id, NULL) ORDER BY D.sample_id) AS sample2 		
+			FROM mo_clinic_group G
+				LEFT OUTER JOIN mo_clinic_group_dtl D ON G.cg_idx = D.cg_idx
+			WHERE G.ud_idx= #{ud_idx}
+			GROUP BY G.cg_idx
+		) S
+		WHERE S.sample1 = #{searchSamples1} 
+			AND S.sample2 = #{searchSamples2}
+	</select>
+
+</mapper>

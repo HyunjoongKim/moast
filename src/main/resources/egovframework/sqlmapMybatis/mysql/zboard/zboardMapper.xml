@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="zboardMapper">
+
+
+
+<sql id="zboardGlobalWhere">
+	<![CDATA[  
+	WHERE pd_querystate <> 'D'
+	and site_code=#{site_code} 
+	and pd_code=#{lmCode}
+	]]>
+</sql>
+
+
+
+	
+<select id="ZboardDAOgetMenuCode" parameterType="string" resultType="string">
+	select au_left_menu_code from tbl_authcommon where ag_code=#{parameter}
+</select>	
+
+
+<sql id="WhereZboardDAOgetList" >
+	<![CDATA[  
+	WHERE pd_code=#{lmCode}
+	AND site_code=#{site_code} 
+	AND pd_querystate <> 'D'
+	]]>
+	<if test="searchWrd != null and searchWrd !=''">
+			<![CDATA[  
+		    
+			AND 
+			( 
+				pd_title like concat('%',#{searchWrd},'%') OR
+			    pd_content like concat('%',#{searchWrd},'%') 
+			 )
+			 ]]>
+	</if>
+	<if test="searchCate1 != null and searchCate1 !=''">
+			<![CDATA[   AND pd_cate =#{searchCate1}   ]]>
+	</if>
+	
+</sql>
+
+<select id="ZboardDAOgetList" parameterType="tbl_pdsVO" resultType="tbl_pdsVO" > 
+	select *,
+	(select count(tc_pkid) from tbl_comment where site_code=a.site_code and del_yn='N' and tc_table='tbl_pds' and pd_pkid=a.pd_pkid and pd_code=a.pd_code) as cmt_count,
+	(select file_extsn from comtnfiledetail where atch_file_id=a.atch_file_id limit 1) as ext
+	from tbl_pds a
+	<include refid="WhereZboardDAOgetList"/>
+	order by  pd_n_order desc ,  pd_ref desc  , pd_step , pd_regdate desc 
+	LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+</select>	
+
+<select id="ZboardDAOgetListCnt" parameterType="tbl_pdsVO" resultType="int">
+	SELECT count(pd_pkid) FROM tbl_pds 
+	<include refid="WhereZboardDAOgetList"/>
+</select>	
+
+<select id="ZboardDAOgetAdmsList" parameterType="tbl_pdsVO" resultType="tbl_pdsVO">
+	<![CDATA[ 
+		SELECT *,
+		(select count(tc_pkid) from tbl_comment where site_code=a.site_code and del_yn='N' and tc_table='tbl_pds' and pd_pkid=a.pd_pkid and pd_code=a.pd_code) as cmt_count,
+		(select file_extsn from comtnfiledetail where atch_file_id=a.atch_file_id limit 1) as ext
+		FROM tbl_pds a
+		WHERE pd_querystate <> 'D'
+		AND pd_code=#{lmCode}
+		AND ADMS_STATE=1 
+		order by  pd_n_order desc ,  pd_ref desc  , pd_step , pd_regdate desc 
+	]]>
+</select>	
+
+
+
+<select id="ZboardDAOgetTblConfigVO" parameterType="string" resultType="tbl_authcommonVO">
+	SELECT * FROM tbl_authcommon WHERE ag_code=#{lmcode} 
+</select>
+
+
+
+<select id="ZboardDAOgetMaxPkid"  resultType="int">
+	SELECT IFNULL(MAX(pd_pkid),0) FROM tbl_pds
+</select>
+
+
+<select id="ZboardDAOgetBoardDetail" parameterType="tbl_pdsVO" resultType="tbl_pdsVO">
+
+	SELECT *,
+	(SELECT COUNT(pd_pkid) from tbl_pds  <include refid="zboardGlobalWhere"/> AND pd_ref=#{pd_pkid} ) as childPkid
+	FROM tbl_pds a
+
+	<include refid="zboardGlobalWhere"/>
+	AND pd_pkid=#{pd_pkid}
+</select>
+
+<select id="ZboardDAOgetBoardDetailbyFileId" parameterType="tbl_pdsVO" resultType="tbl_pdsVO">
+	SELECT * FROM tbl_pds
+	<include refid="zboardGlobalWhere"/>
+	and atch_file_id=#{atch_file_id}
+</select>
+
+
+
+<select id="ZboardDAOglobalNoticeBoardDetail" parameterType="tbl_pdsVO" resultType="tbl_pdsVO">
+<![CDATA[ 
+	SELECT * FROM tbl_pds	
+	WHERE pd_querystate <> 'D'
+	AND pd_code=#{lmCode}
+	AND pd_pkid=#{pd_pkid}
+	AND adms_state=1
+	]]>	
+</select>
+
+<select id="ZboardDAOgetReplyTitle" parameterType="tbl_pdsVO" resultType="string">
+<![CDATA[ 
+	SELECT pd_title FROM tbl_pds
+	]]>	
+	<include refid="zboardGlobalWhere"/>
+	AND pd_pkid=#{pd_pkid}
+
+</select>
+
+
+
+
+
+<insert id="ZboardDAOupdateBoardStep" parameterType="tbl_pdsVO" >
+	<![CDATA[ 
+		UPDATE tbl_pds SET pd_step=pd_step+1 WHERE pd_step>=#{pd_step} and pd_ref = #{pd_ref}
+	]]>
+</insert>
+
+<insert id="ZboardDAOinsertBoard" parameterType="tbl_pdsVO">
+	INSERT INTO tbl_pds 
+	(
+		pd_pkid,
+		site_code,
+		pd_n_order,
+		adms_state,
+		pd_code,
+		pd_security,
+		me_fkid,
+		pd_ref,
+		pd_step,
+		pd_order,
+		pd_writer,
+		pd_id,
+		pd_title,
+		pd_content,
+		pd_globalip,
+		pd_localip,
+		pd_email,
+		pd_pwd,
+		pd_tel,
+		pd_cate,
+		pd_user,
+		atch_file_id,
+		pd_regdate,
+		pd_email_yn,
+		pd_left_code
+	) VALUES 
+	(
+		#{pd_pkid},
+		#{site_code},
+		#{pd_n_order},
+		#{adms_state},
+		#{pd_code},
+		#{pd_security},
+		#{me_fkid},
+		#{pd_ref},
+		#{pd_step},
+		#{pd_order},
+		#{pd_writer},
+		#{pd_id},
+		#{pd_title},
+		#{pd_content},
+		#{pd_globalip},
+		#{pd_localip},
+		#{pd_email},
+		#{pd_pwd},
+		#{pd_tel},
+		#{pd_cate},
+		#{pd_user},
+		#{atch_file_id},
+		sysdate(),
+		#{pd_email_yn},
+		#{pd_left_code}
+	)
+	
+	<selectKey keyProperty="insertId" resultType="java.lang.Integer" >
+             SELECT COUNT(pd_pkid) FROM tbl_pds WHERE pd_pkid=#{pd_pkid}
+    </selectKey>
+</insert>
+
+
+
+
+<update id="ZboardDAOupdateReadCount" parameterType="tbl_pdsVO" >
+	<![CDATA[ 
+		UPDATE tbl_pds SET  pd_visited=pd_visited+1 
+		WHERE pd_querystate <> 'D'
+		AND pd_pkid=#{pd_pkid}
+		AND site_code=#{site_code}
+	]]>
+</update>
+
+
+
+
+
+
+
+<update id="ZboardDAOupdateBoard" parameterType="tbl_pdsVO" >
+	<![CDATA[ 
+		update tbl_pds set  
+			pd_n_order=#{pd_n_order},
+			adms_state=#{adms_state},
+			pd_security=#{pd_security},
+			pd_writer=#{pd_writer},
+			pd_title=#{pd_title},
+			pd_content=#{pd_content},
+			pd_globalip=#{pd_globalip},
+			pd_localip=#{pd_localip},
+			pd_email=#{pd_email},
+			pd_tel=#{pd_tel},
+			pd_cate=#{pd_cate},
+			pd_user=#{pd_user},
+			atch_file_id=#{atch_file_id},
+			pd_lastmodify =sysdate(),
+			pd_email_yn = #{pd_email_yn},
+			pd_left_code = #{pd_left_code}
+ 
+		where pd_querystate <> 'D'
+		and pd_pkid=#{pd_pkid}
+		and site_code=#{site_code}
+	]]>
+</update>
+
+
+
+
+<update id="ZboardDAOdeleteBoardData" parameterType="tbl_pdsVO" >
+	<![CDATA[ 
+		update tbl_pds set  
+		pd_globalip=#{pd_globalip},
+		pd_localip=#{pd_localip},
+		pd_user=#{pd_user},
+		me_fkid=#{me_fkid},
+		pd_querystate='D',
+		pd_lastmodify =sysdate()
+		where pd_pkid=#{pd_pkid}
+		and site_code=#{site_code}
+	]]>
+</update>
+
+
+<update id="ZboardDAOdeleteBoardDataChild" parameterType="tbl_pdsVO" >
+	<![CDATA[ 
+		update tbl_pds set  
+		pd_globalip=#{pd_globalip},
+		pd_localip=#{pd_localip},
+		pd_user=#{pd_user},
+		me_fkid=#{me_fkid},
+		pd_querystate='D',
+		pd_lastmodify =sysdate()
+		where pd_ref=#{pd_pkid}
+		and site_code=#{site_code}
+	]]>
+</update>
+
+
+
+<!-- 이하 코멘트 -->
+
+
+
+
+
+<insert id="ZboardDAOinsertComment" parameterType="tbl_commentVO">
+	INSERT INTO tbl_comment 
+	(
+		tc_table,
+		pd_pkid,
+		pd_code,
+		tc_title,
+		tc_cont,
+		site_code,
+		atch_file_id,
+		pd_id,
+		cret_date,
+		cret_id,
+		cret_ip
+	) VALUES 
+	(
+		#{tc_table},
+		#{pd_pkid},
+		#{pd_code},
+		#{tc_title},
+		#{tc_cont},
+		#{site_code},
+		#{atch_file_id}, 
+		#{pd_id},
+		sysdate(),
+		#{cret_id},
+		#{cret_ip}
+	)
+	
+</insert>
+
+
+<insert id="ZboardDAOupdateComment" parameterType="tbl_commentVO">
+	update  tbl_comment set	
+		tc_title  =#{tc_title},
+		tc_cont   =#{tc_cont},
+		atch_file_id=#{atch_file_id},
+		modi_date=sysdate(),
+		modi_id=#{modi_id},
+		modi_ip=#{modi_ip}
+	where site_code= #{site_code}
+	and del_yn='N'
+	and tc_pkid=#{tc_pkid} 	
+</insert>
+
+
+<insert id="ZboardDAOdeleteCommentData" parameterType="tbl_commentVO">
+	update  tbl_comment set	
+		del_yn='Y',
+		modi_date=sysdate(),
+		modi_id=#{modi_id},
+		modi_ip=#{modi_ip}
+	where site_code= #{site_code}
+	and del_yn='N'
+	and tc_pkid=#{tc_pkid} 	
+</insert>
+
+<select id="ZboardDAOgetCommentList"  parameterType="tbl_commentVO" resultType="tbl_commentVO">
+	select *,cret_id as cret_name from tbl_comment
+	where site_code= #{site_code}
+	and del_yn='N'
+	and pd_pkid=#{pd_pkid} 
+	and tc_table=#{tc_table} 
+	and pd_code=#{pd_code} 
+</select>
+
+<select id="ZboardDAOgetMyComment"  parameterType="tbl_commentVO" resultType="tbl_commentVO">
+	select * from tbl_comment
+	where site_code= #{site_code}
+	and del_yn='N'
+	and tc_pkid=#{tc_pkid} 
+</select>
+
+<update id="ZboardDAOupdateQnaState" parameterType="tbl_pdsVO">
+	update  tbl_pds set	
+		pd_qna_state=#{pd_qna_state},
+		pd_qna_answer=#{pd_qna_answer},
+		pd_lastmodify=sysdate()
+	where site_code= #{site_code}
+	and pd_pkid=#{pd_pkid} 	
+</update>
+
+</mapper>

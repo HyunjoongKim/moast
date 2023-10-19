@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="loginMapper">
+	
+	<sql id="BaseWhere">
+		WHERE del_yn = 'N'
+		AND site_code = #{site_code}		
+	</sql>	
+	
+	<select id="LoginDaoactionLogin" parameterType="LoginVO"  resultType="LoginVO">
+		SELECT  
+			me_name			as name,
+			me_id			as id,
+			auth_code		as authCode,
+			me_latest_login	as latestLogin,
+			me_type			as me_type
+		FROM tbl_member
+		<include refid="BaseWhere"/>
+		AND me_id = #{id}
+		AND me_pwd = #{password}
+	</select>	
+	
+	<select id="LoginDaoactionLoginById" parameterType="string"  resultType="LoginVO">
+		SELECT  
+			me_name			as name,
+			me_id			as id,
+			auth_code		as authCode,
+			me_latest_login	as latestLogin,
+			me_type			as me_type
+		FROM tbl_member
+		WHERE del_yn='N' 
+		AND me_id = #{id}
+	</select>	
+	
+
+	<!-- 코드 목록 -->
+	<select id="LoginDaogetCodeList" parameterType="java.util.HashMap"  resultType="CommonCodeVO">
+		 SELECT main_code, code_name 
+		   FROM tbl_common_code 
+		   <include refid="BaseWhere"/>
+		   AND code_cate = #{code_cate}
+		   AND ptrn_code = #{ptrn_code}
+		   ORDER BY code_order, cret_date
+	</select>	
+	
+	<!-- 시/도 코드 목록 -->
+	<select id="LoginDaogetSidoCodeList" parameterType="java.util.HashMap"  resultType="CommonCodeVO">
+		 SELECT code_idx as main_code, code_name 
+		   FROM tbl_common_code 
+		   <include refid="BaseWhere"/>
+		   AND code_cate = #{code_cate}
+		   AND ptrn_code = #{ptrn_code}
+		   ORDER BY code_order, cret_date
+	</select>	
+	
+	<select id="LoginDaogetSidoCodeMap" parameterType="java.util.HashMap"  resultType="CommonCodeVO">
+		 SELECT main_code, code_name 
+		   FROM tbl_common_code 
+		   <include refid="BaseWhere"/>
+		   AND code_cate = #{code_cate}
+		   AND ptrn_code = #{ptrn_code}
+		   ORDER BY code_order, cret_date
+	</select>	
+	
+	<select id="LoginDaogetSidoCodeMapByCode" parameterType="java.util.HashMap"  resultType="CommonCodeVO">
+		 SELECT main_code, code_name
+		   FROM tbl_common_code 
+		   <include refid="BaseWhere"/>
+		   AND code_cate = #{code_cate}
+		   AND ptrn_code = (SELECT A.code_idx  FROM tbl_common_code A WHERE A.main_code=#{ptrn_code})
+		   ORDER BY code_order, cret_date
+	</select>
+	
+	<!-- 최종 로그인 시간 업데이트 -->
+	<update id="LoginDaoupdateLastLogin" parameterType="loginVO">
+		UPDATE tbl_member SET
+			me_latest_login 	= SYSDATE()	
+		<include refid="BaseWhere"/>
+		AND me_id = #{id}
+		AND site_code = #{site_code}
+	</update>
+
+</mapper>

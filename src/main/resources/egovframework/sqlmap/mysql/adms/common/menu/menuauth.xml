@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="adms.common.menu">
+	<typeAlias  alias="tblMenuManageVO" type="com.bsite.vo.tbl_menu_manageVO"/>
+	<typeAlias  alias="tblMenuSubVO" type="com.bsite.vo.tbl_menu_subVO"/>
+	<typeAlias  alias="LoginVO" type="com.bsite.vo.LoginVO"/>
+	<select id="MenuAuthDao.getMainList"  parameterClass="tblMenuManageVO" resultClass="tblMenuManageVO" >
+		select 
+			*,
+			menu_idx as id,
+			menu_name as name,
+			ptrn_code as _parentId
+		from tbl_menu_manage 
+		<include refid="Base.Where"/> 
+		order by menu_ordr asc
+	</select>
+	
+	
+	<select id="MenuAuthDao.getAuthDetailData"  parameterClass="LoginVO" resultClass="tblMenuSubVO" >
+		select * from tbl_menu_manage <include refid="Base.Where"/> and menu_code=#mkUrl# and ( menu_depth=4 or menu_depth=5 )
+	</select>
+	
+	<!-- 
+	MenuAuthDao.createMenu
+	 -->
+	<insert id="MenuAuthDao.createMenu" parameterClass="tblMenuManageVO">			
+			insert into tbl_menu_manage
+			(
+			  menu_code,
+			  ptrn_code,
+			  menu_head,
+			  menu_name,
+			  menu_url,
+			  menu_url_patn,
+			  menu_depth,
+			  menu_ordr,
+			  menu_view,
+			  menu_target,
+			  is_board,
+			  site_code,
+			  cret_date,
+			  cret_id,
+			  cret_ip,
+			  del_yn
+			)
+			values
+			(
+			  #menu_code#,
+			  #ptrn_code#,
+			  #menu_head#,
+			  #menu_name#,
+			  #menu_url#,
+			  #menu_url_patn#,
+			  #menu_depth#,
+			  #menu_ordr#,
+			  #menu_view#,
+			  #menu_target#,
+			  #is_board#,
+			  #site_code#,
+			  sysdate(),
+			  #cret_id#,
+			  #cret_ip#,
+			  'N'
+			)
+	</insert>
+
+
+	<!-- 
+	MenuAuthDao.updateMenu
+	 -->
+	 
+	<update id="MenuAuthDao.updateMenu" parameterClass="tblMenuManageVO">		 
+		update tbl_menu_manage set
+		menu_head=       #menu_head#,
+		menu_code=       #menu_code#,
+		menu_name=       #menu_name#,
+		menu_url=        #menu_url#,
+		menu_url_patn=   #menu_url_patn#,
+		menu_depth=      #menu_depth#,
+		menu_ordr=       #menu_ordr#,
+		menu_view=       #menu_view#,
+		menu_target=     #menu_target#,
+		is_board   =     #is_board#,
+		modi_date=       sysdate(),
+		modi_id=         #modi_id#,
+		modi_ip=         #modi_ip#
+		<include refid="Base.Where"/> 
+		and menu_idx=#menu_idx#
+	</update>
+	
+	<select id="MenuAuthDao.getIdxByUniqKeys" parameterClass="tblMenuManageVO"  resultClass="int">
+		select 
+			count(*) 
+	    from tbl_menu_manage 
+	    	<include refid="Base.Where"/> 
+	    and  menu_code=#menu_code#
+	</select>
+	 <!-- 
+		MenuAuthDao.isChildByMainCode
+	 -->
+	 <!-- 자식이 생겼는지 여부 -->
+	<select id="MenuAuthDao.isChildByMainCode" parameterClass="tblMenuManageVO"  resultClass="int">
+		select 
+			count(*) 
+	    from tbl_menu_manage 
+	    	<include refid="Base.Where"/> 
+	    and  ptrn_code=#menu_idx#
+	</select>
+	 <!-- 
+	 	
+	  -->
+	  <delete id="MenuAuthDao.deleteNodeByIdx" parameterClass="tblMenuManageVO" >
+		delete from tbl_menu_manage <include refid="Base.Where"/> and  menu_idx=#menu_idx#
+	 </delete>
+</sqlMap>

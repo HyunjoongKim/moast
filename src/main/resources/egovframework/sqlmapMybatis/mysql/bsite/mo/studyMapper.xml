@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="studyMapper">
+	
+	<select id="selectStudyList" parameterType="mo_studyVO" resultType="mo_studyVO">
+		SELECT std_idx, ud_idx, me_idx, std_title, std_note, std_status, std_type, expYN, methYN, mutYN, 
+			genes, grp1, grp2, degType, degLogFC, degPValueType, degPValue, degAdjPValue, dmpType, dmpLogFC, dmpPValueType, dmpPValue, dmpAdjPValue, 
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_study A
+		WHERE A.del_yn = 'N' AND A.std_idx > 0 AND A.std_status = 'S' AND me_idx = #{me_idx}	
+	</select>
+	
+	<select id="selectStudyListCnt" parameterType="mo_studyVO" resultType="java.lang.Integer" >
+		SELECT count(*) AS cnt
+		FROM mo_study A
+		WHERE A.del_yn = 'N' AND A.std_idx > 0 AND A.std_status = 'S' AND me_idx = #{me_idx}	
+	</select>
+	
+	<select id="selectStudyByIdx" parameterType="int" resultType="mo_studyVO">
+		SELECT std_idx, ud_idx, me_idx, std_title, std_note, std_status, std_type, expYN, methYN, mutYN, 
+			genes, grp1, grp2, degType, degLogFC, degPValueType, degPValue, degAdjPValue, dmpType, dmpLogFC, dmpPValueType, dmpPValue, dmpAdjPValue, 
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_study A
+		WHERE A.del_yn = 'N' AND std_idx = #{std_idx}	
+	</select>
+	
+	<select id="selectStudyListByPreset" parameterType="int" resultType="mo_studyVO">
+		SELECT B.ps_idx, A.std_idx, ud_idx, me_idx, std_title, std_note, std_status, std_type, expYN, methYN, mutYN, 
+			genes, grp1, grp2, degType, degLogFC, degPValueType, degPValue, degAdjPValue, dmpType, dmpLogFC, dmpPValueType, dmpPValue, dmpAdjPValue, 
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_study A
+			inner join mo_preset_study B on A.std_idx = B.std_idx
+		WHERE A.del_yn = 'N' AND B.ps_idx = #{ps_idx}
+	</select>
+	
+	<insert id="createStudy" parameterType="mo_studyVO" >
+		INSERT INTO mo_study
+			(ud_idx, me_idx, std_title, std_note, std_status, std_type, expYN, methYN, mutYN, 
+			genes, grp1, grp2, degType, degLogFC, degPValueType, degPValue, degAdjPValue, 
+			dmpType, dmpLogFC, dmpPValueType, dmpPValue, dmpAdjPValue,  
+			site_code, cret_date, cret_id, cret_ip, del_yn)
+		VALUES 
+			(#{ud_idx}, #{me_idx}, #{std_title}, #{std_note}, #{std_status}, #{std_type}, #{expYN}, #{methYN}, #{mutYN}, #{
+			genes}, #{grp1}, #{grp2}, #{degType}, #{degLogFC}, #{degPValueType}, #{degPValue}, #{degAdjPValue}, #{
+			dmpType}, #{dmpLogFC}, #{dmpPValueType}, #{dmpPValue}, #{dmpAdjPValue}, 
+			#{site_code}, NOW(), #{cret_id}, #{cret_ip}, 'N')	
+		
+		<selectKey resultType="int" keyProperty="std_idx" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>		
+	</insert>
+	
+	<update id="updateStudy" parameterType="mo_studyVO">
+		UPDATE mo_study SET
+			std_title = #{std_title},
+			std_note = #{std_note},
+			std_status = #{std_status},
+			std_type = #{std_type},
+			expYN = #{expYN},
+			methYN = #{methYN},
+			mutYN = #{mutYN},
+			genes = #{genes},
+			grp1 = #{grp1},
+			grp2 = #{grp2},
+			degType = #{degType},
+			degLogFC = #{degLogFC},
+			degPValueType = #{degPValueType},
+			degPValue = #{degPValue},
+			degAdjPValue = #{degAdjPValue},
+			dmpType = #{dmpType},
+			dmpLogFC = #{dmpLogFC},
+			dmpPValueType = #{dmpPValueType},
+			dmpPValue = #{dmpPValue},
+			dmpAdjPValue = #{dmpAdjPValue},
+		
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE std_idx = #{std_idx}
+	</update>
+	
+	<update id="updateStudySave" parameterType="mo_studyVO">
+		UPDATE mo_study SET
+			std_title = #{std_title},
+			std_note = #{std_note},
+			std_status = 'S',
+			std_type = #{std_type},
+			expYN = #{expYN},
+			methYN = #{methYN},
+			mutYN = #{mutYN},
+		
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE std_idx = #{std_idx}
+	</update>
+	
+	<update id="deleteStudy" parameterType="mo_studyVO">
+		UPDATE mo_study SET
+			del_yn		= 'Y',
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE std_idx = #{std_idx}
+	</update>			
+	
+	
+	
+	<!-- mo_study_study -->
+	<select id="selectPresetStudyList" parameterType="mo_studyVO" resultType="mo_studyVO">
+		SELECT 
+			P.ps_idx, P.ud_idx, P.me_idx, P.ps_title, P.ps_note, P.ps_status, 
+			S.std_idx, S.std_title, S.std_note, S.std_type, S.expYN, S.methYN, S.mutYn,
+			S.site_code, S.cret_date, S.cret_id, S.cret_ip, S.modi_date, S.modi_id, S.modi_ip, S.del_yn 
+		FROM mo_preset P
+			inner join mo_preset_study PS on P.ps_idx = PS.ps_idx
+			inner join mo_study S on PS.std_idx = S.std_idx
+			
+		WHERE P.del_yn = 'N' AND P.me_idx = #{me_idx}	
+			<if test="ps_idx != 0">
+				<![CDATA[  AND P.ps_idx = #{ps_idx}	]]>
+			</if>
+	</select>
+	
+	<select id="selectPresetStudyCount" parameterType="mo_studyVO" resultType="java.lang.Integer" >
+		SELECT count(*) AS cnt
+		FROM mo_preset P
+			inner join mo_preset_study PS on P.ps_idx = PS.ps_idx
+			inner join mo_study S on PS.std_idx = S.std_idx
+		WHERE P.del_yn = 'N' AND P.me_idx = #{me_idx}	
+	</select>
+	
+	
+
+</mapper>

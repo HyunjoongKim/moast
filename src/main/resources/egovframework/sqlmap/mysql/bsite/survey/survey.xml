@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SurveyDAO">
+
+	<typeAlias  alias="SurveyBAnswerVO" type="com.bsite.survey.service.SurveyAnswerVO"/>
+	<typeAlias  alias="SurveyBQuestionVO" type="com.bsite.survey.service.SurveyQuestionVO"/>
+	<typeAlias  alias="SurveyVO" type="com.bsite.survey.service.SurveyVO"/>
+	<!-- <typeAlias  alias="SurveyResultVO" type="bsite.survey.service.SurveyResultVO"/> -->
+	
+	
+	<select id="Survey.SurveyDetail" parameterClass="SurveyMainVO" resultClass="SurveyMainVO">
+		SELECT
+			sa_idx,
+			sa_title,
+			sa_sdate,
+			sa_edate,
+			sa_stime,
+			left(sa_stime, 2) as sfront_time,
+			right(sa_stime, 2) as sback_time,
+			sa_etime,
+			left(sa_etime, 2) as efront_time,
+			right(sa_etime, 2) as eback_time,
+			sa_content,
+			sa_target,
+			sa_grant,
+			sa_file,
+			sa_act_flag  
+		FROM sv_article
+		where sa_idx = #sa_idx#
+	</select>
+	
+	<select id="Survey.QuestionList" parameterClass="SurveyQuestionVO" resultClass="SurveyQuestionVO">
+		SELECT
+			*
+		FROM sv_question
+		where sa_idx = #sa_idx#	and del_yn = 'N'
+	</select>
+	
+	<select id="Survey.AnswerList" parameterClass="SurveyAnswerVO" resultClass="SurveyAnswerVO">
+		SELECT
+			*
+		FROM sv_answer
+		where sa_idx = #sa_idx#	and del_yn = 'N'
+	</select>
+	
+	
+	<!-- <select id="Survey.ResultList" parameterClass="SurveyResultVO" resultClass="SurveyResultVO">
+		SELECT
+			*	
+		FROM sv_result		
+	</select> -->
+	
+	
+</sqlMap>	
+	

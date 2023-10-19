@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="menuauthMapper">
+
+	<sql id="BaseWhere">
+		WHERE del_yn = 'N'
+		AND site_code = #{site_code}		
+	</sql>
+
+	<select id="MenuAuthDaogetMainList"  parameterType="tblMenuManageVO" resultType="tblMenuManageVO" >
+		select 
+			*,
+			menu_idx as id,
+			menu_name as name,
+			ptrn_code as _parentId
+		from tbl_menu_manage 
+		<include refid="BaseWhere"/> 
+		order by menu_ordr asc
+	</select>
+	
+	
+	<select id="MenuAuthDaogetAuthDetailData"  parameterType="LoginVO" resultType="tblMenuSubVO" >
+		select * from tbl_menu_manage <include refid="BaseWhere"/> and menu_code=#{mkUrl} and ( menu_depth=4 or menu_depth=5 )
+	</select>
+	
+	<!-- 
+	MenuAuthDao.createMenu
+	 -->
+	<insert id="MenuAuthDaocreateMenu" parameterType="tblMenuManageVO">			
+			insert into tbl_menu_manage
+			(
+			  menu_code,
+			  ptrn_code,
+			  menu_head,
+			  menu_name,
+			  menu_url,
+			  menu_url_patn,
+			  menu_depth,
+			  menu_ordr,
+			  menu_view,
+			  menu_target,
+			  is_board,
+			  site_code,
+			  cret_date,
+			  cret_id,
+			  cret_ip,
+			  del_yn
+			)
+			values
+			(
+			  #{menu_code},
+			  #{ptrn_code},
+			  #{menu_head},
+			  #{menu_name},
+			  #{menu_url},
+			  #{menu_url_patn},
+			  #{menu_depth},
+			  #{menu_ordr},
+			  #{menu_view},
+			  #{menu_target},
+			  #{is_board},
+			  #{site_code},
+			  SYSDATE(),
+			  #{cret_id},
+			  #{cret_ip},
+			  'N'
+			)
+	</insert>
+
+
+	<!-- 
+	MenuAuthDao.updateMenu
+	 -->
+	 
+	<update id="MenuAuthDaoupdateMenu" parameterType="tblMenuManageVO">		 
+		update tbl_menu_manage set
+		menu_head	  =  #{menu_head},
+		menu_code     =  #{menu_code},
+		menu_name     =  #{menu_name},
+		menu_url	  =  #{menu_url},
+		menu_url_patn =  #{menu_url_patn},
+		menu_depth	  =  #{menu_depth},
+		menu_ordr	  =  #{menu_ordr},
+		menu_view	  =  #{menu_view},
+		menu_target	  =  #{menu_target},
+		is_board   	  =  #{is_board},
+		modi_date	  =  SYSDATE(),
+		modi_id		  =  #{modi_id},
+		modi_ip		  =  #{modi_ip}
+		<include refid="BaseWhere"/> 
+		and menu_idx=#{menu_idx}
+	</update>
+	
+	<select id="MenuAuthDaogetIdxByUniqKeys" parameterType="tblMenuManageVO"  resultType="int">
+		select 
+			count(*) 
+	    from tbl_menu_manage 
+	    	<include refid="BaseWhere"/> 
+	    and  menu_code=#{menu_code}
+	</select>
+	 <!-- 
+		MenuAuthDao.isChildByMainCode
+	 -->
+	 <!-- 자식이 생겼는지 여부 -->
+	<select id="MenuAuthDaoisChildByMainCode" parameterType="tblMenuManageVO"  resultType="int">
+		select 
+			count(*) 
+	    from tbl_menu_manage 
+	    	<include refid="BaseWhere"/> 
+	    and  ptrn_code=#{menu_idx}
+	</select>
+	 <!-- 
+	 	
+	  -->
+	  <delete id="MenuAuthDaodeleteNodeByIdx" parameterType="tblMenuManageVO" >
+		delete from tbl_menu_manage <include refid="BaseWhere"/> and  menu_idx=#{menu_idx}
+	 </delete>
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?> 
+<!DOCTYPE hibernate-configuration SYSTEM
+			 "classpath:/egovframework/spring/com/hibernate-configuration-3.0.dtd">
+
+<!-- 
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+ -->
+<!-- 
+ <!DOCTYPE hibernate-configuration PUBLIC
+         "InvoiceId" "/home/nnibr_dev/hibernate/hibernate-configuration-3.0.dtd">
+ --> 
+ 
+<hibernate-configuration>
+    <session-factory>
+        <!-- Database connection settings -->
+        <!-- 
+        <property name="connection.driver_class">${Globals.DriverClassName}</property>
+        <property name="connection.url">${Globals.Url}</property>
+        <property name="connection.username">${Globals.UserName}</property>
+        <property name="connection.password">${Globals.Password}</property>
+         -->
+        
+        <property name="dialect">org.hibernate.dialect.MySQLInnoDBDialect</property> 
+        <!-- JDBC connection pool (use the built-in) -->
+        <!-- <property name="connection.pool_size">1</property> --> 
+        <!-- Enable Hibernate's current session context -->
+        <!-- <property name="current_session_context_class">thread</property>  -->
+        <!-- Disable the second-level cache -->
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property> 
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">false</property>
+        <property name="format_sql">true</property>		<!-- 
+		create (서버가 시작될때 스키마 무조건 만들기),
+		create-drop  (서버가 살아있을때만 존재하고 죽으면 지운다)
+		update (서버가 시작될때 변경된부분이있으면 스키마 반영을하지만 스키마 삭제는 안한다)
+		validate (sessionfactory가 시작될때 db랑 스키마 비교만할뿐 컨트롤은안하지만 db랑 틀릴경우 예외를 발생하고 죽는다) (결과적으로 써야할 타입)
+		 -->
+        <property name="hbm2ddl.auto">none</property>
+ 
+ 		<mapping class="com.bsite.vo.AuthVO" />
+ 		<mapping class="com.bsite.vo.tbl_menu_manageVO" />
+ 		<mapping class="com.bsite.vo.tbl_menu_subVO" />
+ 		<mapping class="com.bsite.vo.MemberVO" />
+ 		<mapping class="com.bsite.vo.CommonCodeVO" />
+ 		<mapping class="com.bsite.vo.tbl_adminLogVO" />  <!-- 관리자로그관리 -->
+ 		<mapping class="com.bsite.vo.tbl_menuLogVO" />   <!-- 매뉴로그관리 -->
+ 		<mapping class="com.bsite.vo.tbl_siteLogVO" />   <!-- 사이트로그관리 -->
+ 		<mapping class="com.bsite.vo.tbl_popupVO" />
+ 		<mapping class="com.bsite.vo.tbl_bannerVO" />
+ 		<mapping class="com.bsite.vo.tbl_authcommonVO" />
+ 		<mapping class="com.bsite.vo.tbl_pdsVO" />
+ 		<mapping class="com.bsite.vo.tbl_commentVO" />
+ 		<mapping class="com.bsite.vo.comtnfiledetailVO" />
+ 		<mapping class="com.bsite.vo.tbl_siteVO" />
+ 		<mapping class="com.bsite.vo.tbl_calendarVO" /> 	<!-- 일정관리 -->
+ 		<mapping class="com.bsite.vo.tbl_equipVO" /> 		<!-- 공동활용장비 -->
+ 		
+ 		<mapping class="com.bsite.vo.tcga_crc_clinicalVO" /> 		<!-- 임상정보 -->
+ 		<mapping class="com.bsite.vo.clinical_dataVO" /> 			<!-- 임상정보2 -->
+ 		
+ 		<!-- <mapping class="com.bsite.vo.rna_seqVO" /> --> 			<!-- Expression -->
+ 		<!-- <mapping class="com.bsite.vo.dna_meVO" /> --> 				<!-- Methylation -->
+ 		<!-- <mapping class="com.bsite.vo.dna_me_cgiVO" />  -->			<!-- Methylation CGI  -->
+ 		<!-- <mapping class="com.bsite.vo.dna_me_probe_cgiVO" /> --> 	<!-- Methylation Probe CGI -->
+ 		<!-- <mapping class="com.bsite.vo.dna_me_probe_geneVO" /> -->	<!-- Methylation Probe Gene  -->
+ 		<mapping class="com.bsite.vo.mo_workspaceVO" /> 			<!-- 작업 -->
+ 		<mapping class="com.bsite.vo.mo_work_presetVO" /> 			<!-- 작업 프리셋 -->
+ 		<mapping class="com.bsite.vo.mo_analysisDataVO" /> 			<!-- 사용자 데이터 셋 -->
+ 		
+ 		<mapping class="com.bsite.vo.mo_clinic_groupVO" /> 		<!-- clinic 그룹  -->
+ 		<mapping class="com.bsite.vo.mo_clinic_group_dtlVO" /> 	<!-- clinic 그룹 상세 -->
+ 		<!-- <mapping class="com.bsite.vo.mo_studyVO" /> 			study -->
+ 		
+ 		
+ 		<mapping class="com.bsite.vo.MethylationRecordVO" />
+ 		<mapping class="com.bsite.vo.HtPrimerResultVO" />
+ 		
+ 		<mapping class="com.bsite.vo.VariantRecordVO" />
+ 		<mapping class="com.bsite.vo.variant.VariantPrimerResultVO" />
+ 		<mapping class="com.bsite.vo.variant.VariantBlockerResultVO" />
+ 		<mapping class="com.bsite.vo.variant.VariantProbeResultVO" />
+ 		<mapping class="com.bsite.vo.variant.VariantBEDFileVO" />
+ 		
+ 		<mapping class="com.bsite.vo.survival.SurvivalAdditionalRow" />
+ 		<mapping class="com.bsite.vo.survival.SurvivalAdditionalRowValue" />
+ 		
+        
+    </session-factory>
+ 
+</hibernate-configuration>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bsite.account.myPage">
+	
+	<typeAlias  alias="MemberVO" type="com.bsite.vo.MemberVO"/>
+	
+	<!-- 회원 조회 -->
+    <select id="MyPageDAO.getMemberVO" parameterClass="MemberVO"  resultClass="MemberVO">
+		SELECT 
+			<include refid="Member.Selete"/>	
+		FROM tbl_member 
+		<include refid="Base.Where"/>
+		AND me_id = #me_id#
+	</select>
+	
+
+</sqlMap>

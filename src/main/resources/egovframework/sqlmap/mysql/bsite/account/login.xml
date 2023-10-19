@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bsite.account.login">
+	
+	<typeAlias  alias="LoginVO" type="com.bsite.vo.LoginVO"/>
+	<typeAlias  alias="CommonCodeVO" type="com.bsite.vo.CommonCodeVO"/>
+	
+	<select id="LoginDao.actionLogin" parameterClass="LoginVO"  resultClass="LoginVO">
+		SELECT  
+			me_name			as name,
+			me_id			as id,
+			auth_code		as authCode,
+			me_latest_login	as latestLogin,
+			me_type			as me_type
+		FROM tbl_member
+		<include refid="Base.Where"/>
+		AND me_id = #id#
+		AND me_pwd = #password#
+	</select>	
+
+	<!-- 코드 목록 -->
+	<select id="LoginDao.getCodeList" parameterClass="java.util.HashMap"  resultClass="CommonCodeVO">
+		 SELECT main_code, code_name 
+		   FROM tbl_common_code 
+		   <include refid="Base.Where"/>
+		   AND code_cate = #code_cate#
+		   AND ptrn_code = #ptrn_code#
+		   ORDER BY code_order, cret_date
+	</select>	
+	
+	<!-- 시/도 코드 목록 -->
+	<select id="LoginDao.getSidoCodeList" parameterClass="java.util.HashMap"  resultClass="CommonCodeVO">
+		 SELECT code_idx as main_code, code_name 
+		   FROM tbl_common_code 
+		   <include refid="Base.Where"/>
+		   AND code_cate = #code_cate#
+		   AND ptrn_code = #ptrn_code#
+		   ORDER BY code_order, cret_date
+	</select>	
+	
+	<select id="LoginDao.getSidoCodeMap" parameterClass="java.util.HashMap"  resultClass="CommonCodeVO">
+		 SELECT main_code, code_name 
+		   FROM tbl_common_code 
+		   <include refid="Base.Where"/>
+		   AND code_cate = #code_cate#
+		   AND ptrn_code = #ptrn_code#
+		   ORDER BY code_order, cret_date
+	</select>	
+	
+	<select id="LoginDao.getSidoCodeMapByCode" parameterClass="java.util.HashMap"  resultClass="CommonCodeVO">
+		 SELECT main_code, code_name
+		   FROM tbl_common_code 
+		   <include refid="Base.Where"/>
+		   AND code_cate = #code_cate#
+		   AND ptrn_code = (SELECT A.code_idx  FROM tbl_common_code A WHERE A.main_code=#ptrn_code#)
+		   ORDER BY code_order, cret_date
+	</select>
+	
+	<!-- 최종 로그인 시간 업데이트 -->
+	<update id="LoginDao.updateLastLogin" parameterClass="loginVO">
+		UPDATE tbl_member SET
+			me_latest_login 	= SYSDATE()	
+		<include refid="Base.Where"/>
+		AND me_id = #id#
+		AND site_code = #site_code#
+	</update>
+
+</sqlMap>

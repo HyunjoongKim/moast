@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="codeMapper">
+
+	<sql id="BaseWhere">
+		WHERE del_yn = 'N'
+		AND site_code = #{site_code}		
+	</sql>	
+	
+	<select id="CommonCodeDaogetMainList" parameterType="CommonCodeVO"  resultType="CommonCodeVO">
+		select 
+			*,
+			code_idx as id,
+			code_name as name,
+			ptrn_code as _parentId
+	    from tbl_common_code
+	    	<include refid="BaseWhere"/> 
+	    and ( code_cate=#{code_cate} or code_cate='root')
+	    order by code_depth asc, code_order asc
+	</select>
+	
+	<select id="CommonCodeDaogetIdxByUniqKeys" parameterType="CommonCodeVO"  resultType="int">
+		select 
+			count(*) 
+	    from tbl_common_code
+	    	<include refid="BaseWhere"/> 
+	    and  code_cate=#{code_cate} 
+	    and  main_code=#{main_code}
+	    and  ptrn_code=#{ptrn_code}
+	</select>
+	
+	<!-- 자식이 생겼는지 여부 -->
+	<select id="CommonCodeDaoisChildByMainCode" parameterType="CommonCodeVO"  resultType="int">
+		select 
+			count(*) 
+	    from tbl_common_code 
+	    	<include refid="BaseWhere"/> 
+	    and  code_cate=#{code_cate} 
+	    and  ptrn_code=#{code_idx}
+	</select>
+	
+	
+	<delete id="CommonCodeDaodeleteNodeByIdx" parameterType="CommonCodeVO" >
+		delete from tbl_common_code <include refid="BaseWhere"/> and  code_cate=#{code_cate}  and code_idx=#{code_idx}
+	</delete>
+	
+	
+	<insert id="CommonCodeDaocreateAndUpdate" parameterType="CommonCodeVO">
+		insert into  tbl_common_code
+		(   code_cate,
+			main_code,
+			code_name,
+			ptrn_code,
+			gran_code,
+			code_depth,
+			code_order,
+			code_use,
+			code_etc,
+			site_code,
+			cret_date,
+			cret_id,
+			cret_ip
+		) values 
+		(
+			#{code_cate},
+			#{main_code},
+			#{code_name},
+			#{ptrn_code},
+			#{gran_code},
+			#{code_depth},
+			#{code_order},
+			#{code_use},
+			#{code_etc},
+			#{site_code},
+			SYSDATE(),
+			#{cret_id},
+			#{cret_ip}
+		) ON DUPLICATE KEY UPDATE 
+			code_cate   = #{code_cate}, 
+			code_name   = #{code_name}, 
+			ptrn_code   = #{ptrn_code}, 
+			gran_code   = #{gran_code}, 
+			code_depth  = #{code_depth},
+			code_order  = #{code_order},
+			code_use    = #{code_use},  
+			code_etc    = #{code_etc}, 
+			modi_date   = SYSDATE(),  
+			modi_id     = #{modi_id},   
+			modi_ip     = #{modi_ip}		
+	</insert>
+	
+	<insert id="CommonCodeDaocreate" parameterType="CommonCodeVO">
+		insert into  tbl_common_code
+		(   code_cate,
+			main_code,
+			code_name,
+			ptrn_code,
+			gran_code,
+			code_depth,
+			code_order,
+			code_use,
+			code_etc,
+			site_code,
+			cret_date,
+			cret_id,
+			cret_ip
+		) values 
+		(
+			#{code_cate},
+			#{main_code},
+			#{code_name},
+			#{ptrn_code},
+			#{gran_code},
+			#{code_depth},
+			(select ifnull(max(code_order)+1, 1) from tbl_common_code TT
+			 where ptrn_code = #{ptrn_code}), <!-- 이부분 수정 -->
+			#{code_use},
+			#{code_etc},
+			#{site_code},
+			SYSDATE(),
+			#{cret_id},
+			#{cret_ip}
+		) 
+	</insert>
+	
+	<update id="CommonCodeDaoupdate" parameterType="CommonCodeVO">
+		UPDATE tbl_common_code SET
+			code_cate   = #{code_cate}, 
+			code_name   = #{code_name}, 
+			ptrn_code   = #{ptrn_code}, 
+			gran_code   = #{gran_code}, 
+			code_depth  = #{code_depth},
+			code_order  = #{code_order},
+			code_use    = #{code_use},  
+			code_etc    = #{code_etc}, 
+			modi_date   = SYSDATE(),  
+			modi_id     = #{modi_id},   
+			modi_ip     = #{modi_ip}		
+		<include refid="BaseWhere"/>
+		AND code_idx = #{code_idx}
+	</update>
+	
+<!-- 현재 미사용 향후 필요할 수 있기 때문에 주석 	
+	<update id="CommonCodeDao.changeOrderOther" parameterType="CommonCodeVO">
+		UPDATE tbl_common_code_test SET
+		    code_order = (code_order)+1,
+			modi_date   = SYSDATE(),  
+			modi_id     = #modi_id#,   
+			modi_ip     = #modi_ip#				    
+		<include refid="Base.Where"/>
+		AND code_cate   = #code_cate#  
+		AND ptrn_code   = #ptrn_code# 
+		AND code_idx   != #code_idx#
+		AND code_order >= #change_code_order#		
+	</update>	
+	
+	<update id="CommonCodeDao.changeOrderOwn" parameterType="CommonCodeVO">
+		UPDATE tbl_common_code_test SET
+		    code_order = #change_code_order#,
+			modi_date   = SYSDATE(),  
+			modi_id     = #modi_id#,   
+			modi_ip     = #modi_ip#				    
+		<include refid="Base.Where"/>
+		AND code_cate   = #code_cate#
+		AND code_idx 	= #code_idx#		
+	</update>		 -->
+	
+	<!-- 오더 순서 변경 -->
+    <update id="CommonCodeDaoorderUpdateAction" parameterType="CommonCodeVO">
+		UPDATE tbl_common_code SET
+		    code_order = #{code_order},
+			modi_date   = SYSDATE(),  
+			modi_id     = #{modi_id},   
+			modi_ip     = #{modi_ip}				    
+		<include refid="BaseWhere"/>
+		AND code_cate   = #{code_cate}
+		AND code_idx 	= #{code_idx}		
+	</update>
+</mapper>

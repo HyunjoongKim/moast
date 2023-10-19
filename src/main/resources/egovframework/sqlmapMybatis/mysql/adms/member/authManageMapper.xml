@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="authManageMapper">
+	
+	<sql id="BaseWhere">
+		WHERE del_yn = 'N'
+		AND site_code = #{site_code}		
+	</sql>	
+	
+	<sql id="AuthSelete" >
+		auth_idx	,
+		auth_code	,
+		auth_mn_usecnt	,
+		auth_title	,
+		auth_order	,
+		auth_group	,
+		auth_etc	
+	</sql>
+	
+	<!-- 권한 목록 -->
+    <select id="AuthManageDAOgetAuthList" parameterType="AuthVO"  resultType="AuthVO">
+		SELECT 
+			<include refid="AuthSelete"/>
+		FROM tbl_auth 
+		<include refid="BaseWhere"/>
+		<![CDATA[			
+			Order by auth_idx desc
+			LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+		]]>				
+	</select>
+	
+	<!-- 권한목록 페이징 없이 -->
+	<select id="AuthManageDAOgetAuthListAll" parameterType="java.util.HashMap"  resultType="AuthVO">
+		SELECT 
+			<include refid="AuthSelete"/>
+		FROM tbl_auth 
+		<include refid="BaseWhere"/>	
+		order by auth_order		
+	</select>	
+	
+	<!-- 권한 목록 cnt -->
+	<select id="AuthManageDAOgetAuthListCnt" parameterType="AuthVO" resultType="java.lang.Integer" >
+		SELECT 
+			COUNT(*)
+		FROM tbl_auth 
+		<include refid="BaseWhere"/>
+	</select>
+	
+	<!-- 권한 등록 -->
+	<insert id="AuthManageDAOinsertAuthManage" parameterType="AuthVO" >
+		<![CDATA[
+			INSERT INTO tbl_auth
+			( 
+				auth_code	,
+				auth_title	,
+				auth_order	,
+				auth_group	,
+				auth_etc	,
+				site_code	,
+				cret_date	,
+				cret_id		,
+				cret_ip		,
+				del_yn		
+			)
+			VALUES
+			( 
+				#{auth_code}	,
+				#{auth_title}	,
+				#{auth_order}	,
+				#{auth_group}	,
+				#{auth_etc}		,
+				#{site_code}	,
+				SYSDATE()		,
+				#{cret_id}		,
+				#{cret_ip}		,
+				'N'			
+			)			
+		]]>
+	</insert>
+	
+	<!-- 권한 조회 -->
+    <select id="AuthManageDAOgetAuthVO" parameterType="AuthVO"  resultType="AuthVO">
+		SELECT 
+			<include refid="AuthSelete"/>	
+		FROM tbl_auth 
+		<include refid="BaseWhere"/>
+		AND auth_idx = #{auth_idx}		
+	</select>	
+	
+	<!-- 권한 수정 -->
+	<update id="AuthManageDAOupdateAuthManage" parameterType="AuthVO">
+		UPDATE tbl_auth SET
+			auth_title	= #{auth_title}	,
+			auth_order	= #{auth_order}	,
+			auth_group	= #{auth_group}	,
+			auth_etc	= #{auth_etc}	,
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #{modi_id}	,
+			modi_ip 	= #{modi_ip}
+		<include refid="BaseWhere"/>
+		AND auth_idx = #{auth_idx}
+	</update>
+	
+	<!-- 권한 삭제 -->
+	<update id="AuthManageDAOdeleteAuthManage" parameterType="AuthVO">
+		UPDATE tbl_auth SET
+			del_yn		= 'Y'			,
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #{modi_id}	,
+			modi_ip 	= #{modi_ip}
+		<include refid="BaseWhere"/>
+		AND auth_idx = #{auth_idx}
+	</update>
+	
+	<!-- 권한 코드 중복 체크 -->
+	<select id="AuthManageDAOgetAuthCodeCnt" parameterType="AuthVO" resultType="java.lang.Integer" >
+		SELECT 
+			COUNT(*)
+		FROM tbl_auth 
+		WHERE site_code = #{site_code}
+		AND auth_code = #{auth_code}
+	</select>
+	
+	
+</mapper>

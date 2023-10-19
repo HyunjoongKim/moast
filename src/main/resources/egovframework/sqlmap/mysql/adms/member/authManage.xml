@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="adms.user.authManage">
+	<typeAlias  alias="AuthVO" type="com.bsite.vo.AuthVO"/>
+	
+	<sql id="Auth.Selete" >
+		auth_idx	,
+		auth_code	,
+		auth_mn_usecnt	,
+		auth_title	,
+		auth_order	,
+		auth_group	,
+		auth_etc	
+	</sql>
+	
+	<!-- 권한 목록 -->
+    <select id="AuthManageDAO.getAuthList" parameterClass="AuthVO"  resultClass="AuthVO">
+		SELECT 
+			<include refid="Auth.Selete"/>
+		FROM tbl_auth 
+		<include refid="Base.Where"/>
+		<![CDATA[			
+			Order by auth_idx desc
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+		]]>				
+	</select>
+	<!-- 권한목록 페이징 없이 -->
+	<select id="AuthManageDAO.getAuthListAll" parameterClass="java.util.HashMap"  resultClass="AuthVO">
+		SELECT 
+			<include refid="Auth.Selete"/>
+		FROM tbl_auth 
+		<include refid="Base.Where"/>	
+		order by auth_order		
+	</select>	
+	
+	<!-- 권한 목록 cnt -->
+	<select id="AuthManageDAO.getAuthListCnt" parameterClass="AuthVO" resultClass="java.lang.Integer" >
+		SELECT 
+			COUNT(*)
+		FROM tbl_auth 
+		<include refid="Base.Where"/>
+	</select>
+	
+	<!-- 권한 등록 -->
+	<insert id="AuthManageDAO.insertAuthManage" parameterClass="AuthVO" >
+		<![CDATA[
+			INSERT INTO tbl_auth
+			( 
+				auth_code	,
+				auth_title	,
+				auth_order	,
+				auth_group	,
+				auth_etc	,
+				site_code	,
+				cret_date	,
+				cret_id		,
+				cret_ip		,
+				del_yn		
+			)
+			VALUES
+			( 
+				#auth_code#		,
+				#auth_title#	,
+				#auth_order#	,
+				#auth_group#	,
+				#auth_etc#	,
+				#site_code#	,
+				SYSDATE()	,
+				#cret_id#	,
+				#cret_ip#	,
+				'N'			
+			)			
+		]]>
+	</insert>
+	
+	<!-- 권한 조회 -->
+    <select id="AuthManageDAO.getAuthVO" parameterClass="AuthVO"  resultClass="AuthVO">
+		SELECT 
+			<include refid="Auth.Selete"/>	
+		FROM tbl_auth 
+		<include refid="Base.Where"/>
+		AND auth_idx = #auth_idx#		
+	</select>	
+	
+	<!-- 권한 수정 -->
+	<update id="AuthManageDAO.updateAuthManage" parameterClass="AuthVO">
+		UPDATE tbl_auth SET
+			auth_title	= #auth_title#	,
+			auth_order	= #auth_order#	,
+			auth_group	= #auth_group#	,
+			auth_etc	= #auth_etc#	,
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #modi_id#		,
+			modi_ip 	= #modi_ip#
+		<include refid="Base.Where"/>
+		AND auth_idx = #auth_idx#
+	</update>
+	
+	<!-- 권한 삭제 -->
+	<update id="AuthManageDAO.deleteAuthManage" parameterClass="AuthVO">
+		UPDATE tbl_auth SET
+			del_yn		= 'Y'			,
+			modi_date 	= SYSDATE()		,
+			modi_id 	= #modi_id#		,
+			modi_ip 	= #modi_ip#
+		<include refid="Base.Where"/>
+		AND auth_idx = #auth_idx#
+	</update>
+	
+	<!-- 권한 코드 중복 체크 -->
+	<select id="AuthManageDAO.getAuthCodeCnt" parameterClass="AuthVO" resultClass="java.lang.Integer" >
+		SELECT 
+			COUNT(*)
+		FROM tbl_auth 
+		WHERE site_code = #site_code#
+		AND auth_code = #auth_code#
+	</select>
+	
+	
+</sqlMap>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="presetMapper">
+	
+	<!-- mo_preset -->
+	<select id="selectPresetList" parameterType="mo_presetVO" resultType="mo_presetVO">
+		SELECT A.ps_idx, A.ud_idx,
+			(SELECT ud_title FROM mo_analysis_data S WHERE S.ud_idx = A.ud_idx) AS ud_title, 
+			A.me_idx, A.share_me_idx, A.ps_title, A.ps_note, A.ps_status, 
+			G.cg_idx, G.cg_title, G.cg_type,
+			A.site_code, A.cret_date, A.cret_id, A.cret_ip, A.modi_date, A.modi_id, A.modi_ip, A.del_yn 
+		FROM mo_preset A 
+			LEFT OUTER JOIN mo_clinic_group G ON A.cg_idx = G.cg_idx
+		WHERE A.del_yn = 'N' AND A.me_idx = #{me_idx}	
+	</select>
+	
+	<select id="selectPresetCount" parameterType="mo_presetVO" resultType="java.lang.Integer" >
+		SELECT count(*) AS cnt
+		FROM mo_preset A
+		WHERE A.del_yn = 'N' AND me_idx = #{me_idx}	
+	</select>
+	
+	<select id="selectPresetByIdx" parameterType="int" resultType="mo_presetVO">
+		SELECT A.ps_idx, A.ud_idx, A.me_idx, A.ps_title, A.ps_note, A.ps_status, 
+			G.cg_idx, G.cg_title, G.cg_type,
+			A.site_code, A.cret_date, A.cret_id, A.cret_ip, A.modi_date, A.modi_id, A.modi_ip, A.del_yn 
+		FROM mo_preset A 
+			LEFT OUTER JOIN mo_clinic_group G ON A.cg_idx = G.cg_idx
+		WHERE A.del_yn = 'N' AND A.ps_idx = #{ps_idx}	
+	</select>
+	
+	<insert id="createPreset" parameterType="mo_presetVO" >
+		INSERT INTO mo_preset
+			(ud_idx, me_idx, cg_idx, ps_title, ps_note, ps_status, 
+			site_code, cret_date, cret_id, cret_ip, del_yn)
+		VALUES 
+			(#{ud_idx}, #{me_idx}, #{cg_idx}, #{ps_title}, #{ps_note}, #{ps_status}, 
+			#{site_code}, NOW(), #{cret_id}, #{cret_ip}, 'N')
+		
+		<selectKey resultType="int" keyProperty="ps_idx" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>		
+	</insert>
+	
+	<insert id="createPresetStudy" parameterType="mo_presetVO" >
+		INSERT INTO mo_preset_study
+			(ps_idx, std_idx)
+		VALUES 
+			(#{ps_idx}, #{std_idx})			
+	</insert>
+	
+	<update id="updatePreset" parameterType="mo_presetVO">
+		UPDATE mo_preset SET
+			ps_title = #{ps_title},
+			ps_note = #{ps_note},
+			ps_status = #{ps_status},
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE ps_idx = #{ps_idx}
+	</update>
+	
+	<update id="updatePresetShare" parameterType="mo_presetVO">
+		UPDATE mo_preset SET
+			share_me_idx = #{share_me_idx},
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE ps_idx = #{ps_idx} AND me_idx = #{me_idx}
+	</update>
+	
+	<update id="deletePreset" parameterType="mo_presetVO">
+		UPDATE mo_preset SET
+			del_yn		= 'Y',
+			modi_date 	= NOW(),
+			modi_id 	= #{modi_id},
+			modi_ip 	= #{modi_ip}
+		WHERE ps_idx = #{ps_idx}
+	</update>	
+	
+	<select id="selectPresetSharedList" parameterType="mo_presetVO" resultType="mo_presetVO">
+		SELECT A.ps_idx, A.ud_idx, A.me_idx, A.share_me_idx, A.ps_title, A.ps_note, A.ps_status, 
+			G.cg_idx, G.cg_title, G.cg_type, 
+			(SELECT concat(me_name, ':', me_id) FROM tbl_member WHERE me_idx = A.me_idx) AS me_name,
+			A.site_code, A.cret_date, A.cret_id, A.cret_ip, A.modi_date, A.modi_id, A.modi_ip, A.del_yn 
+		FROM mo_preset A 
+			LEFT OUTER JOIN mo_clinic_group G ON A.cg_idx = G.cg_idx
+		WHERE A.del_yn = 'N' AND A.share_me_idx = #{share_me_idx}	
+	</select>
+	
+	<select id="selectPresetSharedCount" parameterType="mo_presetVO" resultType="java.lang.Integer" >
+		SELECT count(*) AS cnt
+		FROM mo_preset A
+		WHERE A.del_yn = 'N' AND share_me_idx = #{share_me_idx}	
+	</select>		
+	
+	<!-- mo_preset_share -->
+	<select id="selectPresetShareList" parameterType="mo_preset_shareVO" resultType="mo_preset_shareVO">
+		SELECT pss_idx, ps_idx, ud_idx, me_idx, target_me_idx, pss_title, pss_note
+			site_code, cret_date, cret_id, cret_ip, modi_date, modi_id, modi_ip, del_yn
+		FROM mo_preset_share A
+		WHERE A.del_yn = 'N' AND target_me_idx = #{target_me_idx}	
+	</select>
+	
+	<select id="selectPresetShareCount" parameterType="mo_preset_shareVO" resultType="java.lang.Integer" >
+		SELECT
+			count(*) AS cnt
+		FROM mo_preset_share A
+		     mo_preset_share
+		WHERE A.del_yn = 'N' AND target_me_idx = #{target_me_idx}	
+	</select>
+	
+
+</mapper>
